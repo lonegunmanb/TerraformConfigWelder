@@ -62,8 +62,16 @@ locals {
       "oc_removed" : null,
       "renamed" : [
         [
+          "windows.classification_included",
+          "classifications_included"
+        ],
+        [
           "error_meesage",
           "error_message"
+        ],
+        [
+          "linux.classification_included",
+          "classifications_included"
         ]
       ]
     },
@@ -103,9 +111,19 @@ locals {
       "resource_type" : "azurerm_cdn_endpoint",
       "deleted" : null,
       "oc_removed" : [
-        "origin_path",
         "probe_path",
+        "origin_path",
         "content_types_to_compress"
+      ],
+      "renamed" : null
+    },
+    "azurerm_cdn_endpoint_custom_domain" : {
+      "resource_type" : "azurerm_cdn_endpoint_custom_domain",
+      "deleted" : [
+        "user_managed_https.key_vault_certificate_id"
+      ],
+      "oc_removed" : [
+        "user_managed_https.key_vault_secret_id"
       ],
       "renamed" : null
     },
@@ -120,24 +138,51 @@ locals {
         ]
       ]
     },
+    "azurerm_consumption_budget_management_group" : {
+      "resource_type" : "azurerm_consumption_budget_management_group",
+      "deleted" : [
+        "filter.not"
+      ],
+      "oc_removed" : null,
+      "renamed" : null
+    },
+    "azurerm_consumption_budget_resource_group" : {
+      "resource_type" : "azurerm_consumption_budget_resource_group",
+      "deleted" : [
+        "filter.not"
+      ],
+      "oc_removed" : null,
+      "renamed" : null
+    },
+    "azurerm_consumption_budget_subscription" : {
+      "resource_type" : "azurerm_consumption_budget_subscription",
+      "deleted" : [
+        "filter.not"
+      ],
+      "oc_removed" : null,
+      "renamed" : null
+    },
     "azurerm_container_app_job" : {
       "resource_type" : "azurerm_container_app_job",
       "deleted" : null,
       "oc_removed" : null,
       "renamed" : [
         [
-          "secrets",
-          "secret"
-        ],
-        [
           "registries",
           "registry"
+        ],
+        [
+          "secrets",
+          "secret"
         ]
       ]
     },
     "azurerm_container_group" : {
       "resource_type" : "azurerm_container_group",
-      "deleted" : null,
+      "deleted" : [
+        "container.gpu",
+        "container.gpu_limit"
+      ],
       "oc_removed" : [
         "exposed_port"
       ],
@@ -146,12 +191,14 @@ locals {
     "azurerm_container_registry" : {
       "resource_type" : "azurerm_container_registry",
       "deleted" : [
-        "retention_policy",
-        "trust_policy"
+        "network_rule_set.virtual_network",
+        "trust_policy",
+        "encryption.enabled",
+        "retention_policy"
       ],
       "oc_removed" : [
-        "encryption",
-        "network_rule_set"
+        "network_rule_set",
+        "encryption"
       ],
       "renamed" : null
     },
@@ -163,16 +210,16 @@ locals {
       "oc_removed" : null,
       "renamed" : [
         [
-          "enable_free_tier",
-          "free_tier_enabled"
+          "enable_multiple_write_locations",
+          "multiple_write_locations_enabled"
         ],
         [
           "enable_automatic_failover",
           "automatic_failover_enabled"
         ],
         [
-          "enable_multiple_write_locations",
-          "multiple_write_locations_enabled"
+          "enable_free_tier",
+          "free_tier_enabled"
         ]
       ]
     },
@@ -278,18 +325,33 @@ locals {
     "azurerm_kubernetes_cluster" : {
       "resource_type" : "azurerm_kubernetes_cluster",
       "deleted" : [
+        "web_app_routing.dns_zone_id",
+        "default_node_pool.node_taints",
+        "azure_active_directory_role_based_access_control.server_app_id",
+        "azure_active_directory_role_based_access_control.server_app_secret",
+        "azure_active_directory_role_based_access_control.managed",
+        "azure_active_directory_role_based_access_control.client_app_id",
         "automatic_channel_upgrade",
+        "workload_autoscaler_profile.vertical_pod_autoscaler_update_mode",
+        "workload_autoscaler_profile.vertical_pod_autoscaler_controlled_values",
+        "network_profile.docker_bridge_cidr",
+        "network_profile.outbound_ip_prefix_ids",
+        "network_profile.outbound_ip_address_ids",
+        "node_os_channel_upgrade",
         "public_network_access_enabled",
-        "enable_pod_security_policy",
-        "node_os_channel_upgrade"
+        "enable_pod_security_policy"
       ],
       "oc_removed" : [
         "api_server_access_profile"
       ],
       "renamed" : [
         [
+          "network_profile.ebpf_data_plane",
+          "network_data_plane"
+        ],
+        [
           "api_server_authorized_ip_ranges",
-          "authorized_ip_ranges` within the `api_server_access_profile"
+          "authorized_ip_ranges"
         ]
       ]
     },
@@ -301,11 +363,23 @@ locals {
       "oc_removed" : null,
       "renamed" : null
     },
+    "azurerm_linux_function_app" : {
+      "resource_type" : "azurerm_linux_function_app",
+      "deleted" : null,
+      "oc_removed" : [
+        "site_config.health_check_eviction_time_in_min"
+      ],
+      "renamed" : null
+    },
     "azurerm_linux_virtual_machine_scale_set" : {
       "resource_type" : "azurerm_linux_virtual_machine_scale_set",
       "deleted" : null,
       "oc_removed" : null,
       "renamed" : [
+        [
+          "scale_in_policy",
+          "scale_in"
+        ],
         [
           "gallery_applications",
           "gallery_application"
@@ -313,12 +387,57 @@ locals {
         [
           "terminate_notification",
           "termination_notification"
-        ],
-        [
-          "scale_in_policy",
-          "scale_in"
         ]
       ]
+    },
+    "azurerm_linux_web_app" : {
+      "resource_type" : "azurerm_linux_web_app",
+      "deleted" : [
+        "site_config.application_stack.docker_image",
+        "site_config.application_stack.docker_image_tag"
+      ],
+      "oc_removed" : [
+        "site_config.application_stack.docker_registry_url",
+        "site_config.application_stack.docker_registry_username",
+        "site_config.application_stack.docker_registry_password",
+        "site_config.health_check_eviction_time_in_min"
+      ],
+      "renamed" : [
+        [
+          "site_config.auto_heal_setting.trigger.slow_request.path",
+          "slow_request_with_path"
+        ]
+      ]
+    },
+    "azurerm_linux_web_app_slot" : {
+      "resource_type" : "azurerm_linux_web_app_slot",
+      "deleted" : [
+        "site_config.application_stack.docker_image_tag",
+        "site_config.application_stack.docker_image"
+      ],
+      "oc_removed" : [
+        "site_config.application_stack.docker_registry_url",
+        "site_config.application_stack.docker_registry_username",
+        "site_config.application_stack.docker_registry_password",
+        "site_config.health_check_eviction_time_in_min"
+      ],
+      "renamed" : [
+        [
+          "site_config.auto_heal_setting.trigger.slow_request.path",
+          "slow_request_with_path"
+        ]
+      ]
+    },
+    "azurerm_logic_app_standard" : {
+      "resource_type" : "azurerm_logic_app_standard",
+      "deleted" : null,
+      "oc_removed" : [
+        "site_config.scm_ip_restriction",
+        "site_config.scm_ip_restriction.headers",
+        "site_config.ip_restriction",
+        "site_config.ip_restriction.headers"
+      ],
+      "renamed" : null
     },
     "azurerm_machine_learning_compute_instance" : {
       "resource_type" : "azurerm_machine_learning_compute_instance",
@@ -349,6 +468,14 @@ locals {
           "parameter_values"
         ]
       ]
+    },
+    "azurerm_managed_disk" : {
+      "resource_type" : "azurerm_managed_disk",
+      "deleted" : [
+        "encryption_settings.enabled"
+      ],
+      "oc_removed" : null,
+      "renamed" : null
     },
     "azurerm_management_group_policy_remediation" : {
       "resource_type" : "azurerm_management_group_policy_remediation",
@@ -384,6 +511,25 @@ locals {
         ]
       ]
     },
+    "azurerm_monitor_action_group" : {
+      "resource_type" : "azurerm_monitor_action_group",
+      "deleted" : [
+        "event_hub_receiver.event_hub_id"
+      ],
+      "oc_removed" : [
+        "event_hub_receiver.event_hub_name",
+        "event_hub_receiver.event_hub_namespace"
+      ],
+      "renamed" : null
+    },
+    "azurerm_monitor_data_collection_rule" : {
+      "resource_type" : "azurerm_monitor_data_collection_rule",
+      "deleted" : null,
+      "oc_removed" : [
+        "data_sources.syslog.streams"
+      ],
+      "renamed" : null
+    },
     "azurerm_monitor_diagnostic_setting" : {
       "resource_type" : "azurerm_monitor_diagnostic_setting",
       "deleted" : null,
@@ -399,10 +545,10 @@ locals {
       "resource_type" : "azurerm_netapp_snapshot_policy",
       "deleted" : null,
       "oc_removed" : [
-        "hourly_schedule",
         "monthly_schedule",
         "daily_schedule",
-        "weekly_schedule"
+        "weekly_schedule",
+        "hourly_schedule"
       ],
       "renamed" : null
     },
@@ -443,6 +589,14 @@ locals {
         "configuration"
       ],
       "oc_removed" : null,
+      "renamed" : null
+    },
+    "azurerm_private_endpoint" : {
+      "resource_type" : "azurerm_private_endpoint",
+      "deleted" : null,
+      "oc_removed" : [
+        "ip_configuration.member_name"
+      ],
       "renamed" : null
     },
     "azurerm_recovery_services_vault_resource_guard_association" : {
@@ -560,16 +714,16 @@ locals {
       "oc_removed" : null,
       "renamed" : [
         [
-          "enable_express",
-          "express_enabled"
+          "enable_partitioning",
+          "partitioning_enabled"
         ],
         [
           "enable_batched_operations",
           "batched_operations_enabled"
         ],
         [
-          "enable_partitioning",
-          "partitioning_enabled"
+          "enable_express",
+          "express_enabled"
         ]
       ]
     },
@@ -588,15 +742,11 @@ locals {
       "resource_type" : "azurerm_servicebus_topic",
       "deleted" : null,
       "oc_removed" : [
-        "batched_operations_enabled",
+        "express_enabled",
         "partitioning_enabled",
-        "express_enabled"
+        "batched_operations_enabled"
       ],
       "renamed" : [
-        [
-          "enable_express",
-          "express_enabled"
-        ],
         [
           "enable_batched_operations",
           "batched_operations_enabled"
@@ -604,6 +754,10 @@ locals {
         [
           "enable_partitioning",
           "partitioning_enabled"
+        ],
+        [
+          "enable_express",
+          "express_enabled"
         ]
       ]
     },
@@ -617,7 +771,9 @@ locals {
     },
     "azurerm_site_recovery_replicated_vm" : {
       "resource_type" : "azurerm_site_recovery_replicated_vm",
-      "deleted" : null,
+      "deleted" : [
+        "network_interface.is_primary"
+      ],
       "oc_removed" : [
         "network_interface"
       ],
@@ -627,16 +783,24 @@ locals {
       "resource_type" : "azurerm_site_recovery_replication_recovery_plan",
       "deleted" : null,
       "oc_removed" : [
-        "shutdown_recovery_group",
+        "boot_recovery_group",
         "failover_recovery_group",
-        "boot_recovery_group"
+        "shutdown_recovery_group"
       ],
       "renamed" : [
         [
           "recovery_group",
-          "shutdown_recovery_group`, `failover_recovery_group` and `boot_recovery_group"
+          "shutdown_recovery_group"
         ]
       ]
+    },
+    "azurerm_snapshot" : {
+      "resource_type" : "azurerm_snapshot",
+      "deleted" : [
+        "encryption_settings.enabled"
+      ],
+      "oc_removed" : null,
+      "renamed" : null
     },
     "azurerm_storage_account" : {
       "resource_type" : "azurerm_storage_account",
@@ -685,7 +849,7 @@ locals {
       "oc_removed" : null,
       "renamed" : [
         [
-          "private_endpoint_network_policies_enabled",
+          "enforce_private_link_endpoint_network_policies",
           "private_endpoint_network_policies"
         ],
         [
@@ -693,7 +857,7 @@ locals {
           "private_link_service_network_policies_enabled"
         ],
         [
-          "enforce_private_link_endpoint_network_policies",
+          "private_endpoint_network_policies_enabled",
           "private_endpoint_network_policies"
         ]
       ]
@@ -712,15 +876,17 @@ locals {
     "azurerm_synapse_workspace" : {
       "resource_type" : "azurerm_synapse_workspace",
       "deleted" : [
-        "sql_aad_admin",
-        "aad_admin"
+        "aad_admin",
+        "sql_aad_admin"
       ],
       "oc_removed" : null,
       "renamed" : null
     },
     "azurerm_virtual_network" : {
       "resource_type" : "azurerm_virtual_network",
-      "deleted" : null,
+      "deleted" : [
+        "subnet.address_prefix"
+      ],
       "oc_removed" : [
         "subnet"
       ],
@@ -740,19 +906,40 @@ locals {
         "resource_group_name"
       ],
       "oc_removed" : [
-        "external_mapping",
-        "internal_mapping"
+        "internal_mapping",
+        "external_mapping"
       ],
       "renamed" : [
         [
-          "internal_address_space_mappings",
-          "internal_mapping"
-        ],
-        [
           "external_address_space_mappings",
           "external_mapping"
+        ],
+        [
+          "internal_address_space_mappings",
+          "internal_mapping"
         ]
       ]
+    },
+    "azurerm_web_application_firewall_policy" : {
+      "resource_type" : "azurerm_web_application_firewall_policy",
+      "deleted" : null,
+      "oc_removed" : [
+        "managed_rules.managed_rule_set.rule_group_override.rule"
+      ],
+      "renamed" : [
+        [
+          "managed_rules.managed_rule_set.rule_group_override.disabled_rules",
+          "rule"
+        ]
+      ]
+    },
+    "azurerm_windows_function_app" : {
+      "resource_type" : "azurerm_windows_function_app",
+      "deleted" : null,
+      "oc_removed" : [
+        "site_config.health_check_eviction_time_in_min"
+      ],
+      "renamed" : null
     },
     "azurerm_windows_virtual_machine_scale_set" : {
       "resource_type" : "azurerm_windows_virtual_machine_scale_set",
@@ -760,20 +947,102 @@ locals {
       "oc_removed" : null,
       "renamed" : [
         [
-          "terminate_notification",
-          "termination_notification"
-        ],
-        [
           "gallery_applications",
           "gallery_application"
         ],
         [
           "scale_in_policy",
           "scale_in"
+        ],
+        [
+          "terminate_notification",
+          "termination_notification"
+        ]
+      ]
+    },
+    "azurerm_windows_web_app" : {
+      "resource_type" : "azurerm_windows_web_app",
+      "deleted" : [
+        "site_config.application_stack.docker_container_registry",
+        "site_config.application_stack.docker_container_tag",
+        "site_config.application_stack.docker_container_name",
+        "site_config.application_stack.python_version"
+      ],
+      "oc_removed" : [
+        "site_config.application_stack.docker_registry_password",
+        "site_config.application_stack.docker_registry_url",
+        "site_config.application_stack.docker_registry_username",
+        "site_config.health_check_eviction_time_in_min"
+      ],
+      "renamed" : [
+        [
+          "site_config.auto_heal_setting.trigger.slow_request.path",
+          "slow_request_with_path"
+        ]
+      ]
+    },
+    "azurerm_windows_web_app_slot" : {
+      "resource_type" : "azurerm_windows_web_app_slot",
+      "deleted" : [
+        "site_config.application_stack.docker_container_tag",
+        "site_config.application_stack.docker_container_name",
+        "site_config.application_stack.docker_container_registry",
+        "site_config.application_stack.python_version"
+      ],
+      "oc_removed" : [
+        "site_config.application_stack.docker_registry_password",
+        "site_config.application_stack.docker_registry_url",
+        "site_config.application_stack.docker_registry_username",
+        "site_config.health_check_eviction_time_in_min"
+      ],
+      "renamed" : [
+        [
+          "site_config.auto_heal_setting.trigger.slow_request.path",
+          "slow_request_with_path"
         ]
       ]
     }
   }
+  simply_renamed = flatten([for resource_type, rename_maps in {
+    azurerm_automation_software_update_configuration = {
+      "error_meesage" = "error_message"
+    }
+    azurerm_bot_channels_registration = {
+      "isolated_network_enabled" = "public_network_access_enabled"
+    }
+    azurerm_cdn_frontdoor_origin = {
+      "health_probes_enabled" = "enabled"
+    }
+    azurerm_data_protection_backup_policy_blob_storage = {
+      "retention_duration" = "operational_default_retention_duration"
+    }
+    azurerm_kubernetes_cluster = {
+      "network_profile.ebpf_data_plane" = "network_data_plane"
+      "api_server_authorized_ip_ranges" = "authorized_ip_ranges"
+    }
+    azurerm_management_group_policy_remediation = {
+      "policy_definition_id" = "policy_definition_reference_id"
+    }
+    azurerm_resource_group_policy_remediation = {
+      "policy_definition_id" = "policy_definition_reference_id"
+    }
+    azurerm_resource_policy_remediation = {
+      "policy_definition_id" = "policy_definition_reference_id"
+    }
+    #     azurerm_subnet = {
+    #       "enforce_private_link_endpoint_network_policies" = "private_endpoint_network_policies"
+    #       "enforce_private_link_service_network_policies"  = "private_link_service_network_policies_enabled"
+    #       "private_endpoint_network_policies_enabled"      = "private_endpoint_network_policies"
+    #     }
+    azurerm_subscription_policy_remediation = {
+      "policy_definition_id" = "policy_definition_reference_id"
+    }
+    } : [for from, to in rename_maps : {
+      resource_type = resource_type
+      from          = from
+      to            = to
+    }]
+  ])
 }
 
 data "resource" all {
@@ -794,16 +1063,16 @@ locals {
   if anytrue([for l in try(v.renamed == null ? [] : v.renamed, []) : ("enable_${l[0]}" == "${l[1]}_enabled") || ("enable_${l[1]}" == "${l[0]}_enabled")]) }
   flatten_enable_to_enabled = flatten([for k, v in local.enable_to_enabled : flatten([for i in v.renamed : {
     resource_type = k
-    from = i[0]
-    to = i[1]
+    from          = i[0]
+    to            = i[1]
   }])])
   enable_to_enabled_blocks = toset(flatten([
     for k, v in local.all_resources : [
       for obj in local.flatten_enable_to_enabled : {
         block_address = k
-        mptf = v.mptf
-        from = obj.from
-        to = obj.to
+        mptf          = v.mptf
+        from          = obj.from
+        to            = obj.to
       } if v.mptf.block_labels[0] == obj.resource_type
     ]
   ]))
@@ -827,4 +1096,41 @@ transform "remove_block_content" attribute_removed {
   for_each             = try(local.attribute_removed_addresses, [])
   target_block_address = each.value
   paths                = local.diffs[local.all_resources[each.value].mptf.block_labels[0]].deleted
+  depends_on           = [transform.regex_replace_expression.simply_renamed]
+}
+
+transform rename_attribute enable_to_enabled {
+  dynamic "rename" {
+    for_each = toset(local.enable_to_enabled_blocks)
+    content {
+      resource_type  = rename.value.mptf.block_labels[0]
+      attribute_path = [rename.value.from]
+      new_name       = rename.value.to
+    }
+  }
+}
+
+transform regex_replace_expression enable_to_enabled {
+  for_each    = toset(local.enable_to_enabled_blocks)
+  regex       = "${each.value.mptf.block_labels[0]}\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?${each.value.from}"
+  replacement = "${each.value.mptf.block_labels[0]}.$${1}$${2}$${3}$${4}$${5}${each.value.to}"
+  depends_on  = [transform.rename_attribute.enable_to_enabled]
+}
+
+transform rename_attribute simply_renamed {
+  dynamic "rename" {
+    for_each = local.simply_renamed
+    content {
+      resource_type  = rename.value.resource_type
+      attribute_path = [rename.value.from]
+      new_name       = rename.value.to
+    }
+  }
+}
+
+transform regex_replace_expression simply_renamed {
+  for_each    = local.simply_renamed
+  regex       = "${each.value.resource_type}\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?${each.value.from}"
+  replacement = "${each.value.resource_type}.$${1}$${2}$${3}$${4}$${5}${each.value.to}"
+  depends_on  = [transform.rename_attribute.simply_renamed]
 }

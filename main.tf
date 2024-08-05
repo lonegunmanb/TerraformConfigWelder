@@ -1,5 +1,5 @@
 resource "azurerm_virtual_network" "this" {
-  address_space = []
+  address_space       = []
   location            = ""
   name                = ""
   resource_group_name = ""
@@ -57,10 +57,54 @@ resource "azurerm_analysis_services_server" "server" {
 }
 
 resource "azurerm_servicebus_topic" "example" {
+  count        = 1
   name         = "tfex_servicebus_topic"
   namespace_id = azurerm_servicebus_namespace.example.id
 
-  enable_express = true
+  enable_express            = true
   enable_batched_operations = true
-  enable_partitioning = true
+  enable_partitioning       = true
+}
+
+output "topic_express_enabled" {
+  value = azurerm_servicebus_topic.example[0].enable_express
+}
+
+output "topic_batched_operations_enabled" {
+  value = azurerm_servicebus_topic.example[0].enable_batched_operations
+}
+
+output "topic_partitioning_enabled" {
+  value = azurerm_servicebus_topic.example[0].enable_partitioning
+}
+
+resource "azurerm_kubernetes_cluster" "example" {
+  count                           = 1
+  name                            = "example-aks1"
+  location                        = azurerm_resource_group.example.location
+  resource_group_name             = azurerm_resource_group.example.name
+  dns_prefix                      = "exampleaks1"
+  api_server_authorized_ip_ranges = ["198.51.100.0/24"]
+  default_node_pool {
+    name       = "default"
+    node_count = 1
+    vm_size    = "Standard_D2_v2"
+    linux_os_config {
+      swap_file_size_mb = 100
+    }
+  }
+  network_profile {
+    network_plugin  = "azure"
+    ebpf_data_plane = "azure"
+  }
+  identity {
+    type = "SystemAssigned"
+  }
+  tags = {
+    Environment = "Production"
+  }
+}
+
+locals {
+  swap_file_size_mb = azurerm_kubernetes_cluster.example[0].default_node_pool[0].linux_os_config[0].fake_block[0].swap_file_size_mb
 }
