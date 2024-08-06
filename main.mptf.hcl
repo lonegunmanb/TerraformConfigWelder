@@ -1003,44 +1003,110 @@ locals {
       ]
     }
   }
-  simply_renamed = flatten([for resource_type, rename_maps in {
-    azurerm_automation_software_update_configuration = {
-      "error_meesage" = "error_message"
-    }
-    azurerm_bot_channels_registration = {
-      "isolated_network_enabled" = "public_network_access_enabled"
-    }
-    azurerm_cdn_frontdoor_origin = {
-      "health_probes_enabled" = "enabled"
-    }
-    azurerm_data_protection_backup_policy_blob_storage = {
-      "retention_duration" = "operational_default_retention_duration"
-    }
-    azurerm_kubernetes_cluster = {
-      "network_profile.ebpf_data_plane" = "network_data_plane"
-      "api_server_authorized_ip_ranges" = "authorized_ip_ranges"
-    }
-    azurerm_management_group_policy_remediation = {
-      "policy_definition_id" = "policy_definition_reference_id"
-    }
-    azurerm_resource_group_policy_remediation = {
-      "policy_definition_id" = "policy_definition_reference_id"
-    }
-    azurerm_resource_policy_remediation = {
-      "policy_definition_id" = "policy_definition_reference_id"
-    }
+  simply_renamed = flatten([for resource_type, renames in {
+    azurerm_automation_software_update_configuration = [
+      {
+        from = "error_meesage"
+        to   = "error_message"
+      }
+    ]
+    azurerm_bot_channels_registration = [
+      {
+        from = "isolated_network_enabled"
+        to   = "public_network_access_enabled"
+      }
+    ]
+    azurerm_cdn_frontdoor_origin = [
+      {
+        from = "health_probes_enabled"
+        to   = "enabled"
+      }
+    ]
+    azurerm_container_app_job = [
+      {
+        from = "secrets"
+        to   = "secret"
+      },
+      {
+        from = "registries"
+        to   = "registry"
+      },
+    ]
+    azurerm_linux_virtual_machine_scale_set = [
+      {
+        from = "gallery_applications.package_reference_id"
+        to   = "version_id"
+      },
+      {
+        from = "gallery_applications.configuration_reference_blob_uri"
+        to   = "configuration_blob_uri"
+      },
+      {
+        from = "gallery_applications"
+        to   = "gallery_application"
+      },
+    ]
+    azurerm_data_protection_backup_policy_blob_storage = [
+      {
+        from = "retention_duration"
+        to   = "operational_default_retention_duration"
+      }
+    ]
+    azurerm_kubernetes_cluster = [
+      {
+        from = "network_profile.ebpf_data_plane"
+        to   = "network_data_plane"
+      },
+      {
+        from = "api_server_authorized_ip_ranges"
+        to   = "authorized_ip_ranges"
+      }
+    ]
+    azurerm_monitor_aad_diagnostic_setting = [
+      {
+        from = "log"
+        to = "enabled_log"
+      }
+    ]
+    azurerm_monitor_diagnostic_setting = [
+      {
+        from = "log"
+        to = "enabled_log"
+      }
+    ]
+    azurerm_management_group_policy_remediation = [
+      {
+        from = "policy_definition_id"
+        to   = "policy_definition_reference_id"
+      }
+    ]
+    azurerm_resource_group_policy_remediation = [
+      {
+        from = "policy_definition_id"
+        to   = "policy_definition_reference_id"
+      }
+    ]
+    azurerm_resource_policy_remediation = [
+      {
+        from = "policy_definition_id"
+        to   = "policy_definition_reference_id"
+      }
+    ]
     #     azurerm_subnet = {
     #       "enforce_private_link_endpoint_network_policies" = "private_endpoint_network_policies"
     #       "enforce_private_link_service_network_policies"  = "private_link_service_network_policies_enabled"
     #       "private_endpoint_network_policies_enabled"      = "private_endpoint_network_policies"
     #     }
-    azurerm_subscription_policy_remediation = {
-      "policy_definition_id" = "policy_definition_reference_id"
-    }
-    } : [for from, to in rename_maps : {
+    azurerm_subscription_policy_remediation = [
+      {
+        from = "policy_definition_id"
+        to   = "policy_definition_reference_id"
+      }
+    ]
+    } : [for rename in renames : {
       resource_type = resource_type
-      from          = from
-      to            = to
+      from          = rename.from
+      to            = rename.to
     }]
   ])
 }
@@ -1076,10 +1142,14 @@ locals {
       } if v.mptf.block_labels[0] == obj.resource_type
     ]
   ]))
+  monitor_diagnostic_setting_types = toset(["azurerm_monitor_aad_diagnostic_setting", "azurerm_monitor_diagnostic_setting"])
+  monitor_diagnostic_setting_resource_blocks = flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if contains(local.monitor_diagnostic_setting_types, resource_type)])
+  monitor_diagnostic_setting_resource_mptfs     = flatten([for _, blocks in local.monitor_diagnostic_setting_resource_blocks : [for b in blocks : b.mptf]])
+  monitor_diagnostic_setting_resource_addresses = [for mptf in local.monitor_diagnostic_setting_resource_mptfs : mptf.block_address]
 }
 
 transform "update_in_place" oc_removed {
-  for_each             = try(local.oc_removed_addresses, [])
+  for_each             = [] /*try(local.oc_removed_addresses, [])*/
   target_block_address = each.value
   asstring {
     lifecycle {
@@ -1092,14 +1162,14 @@ IGNORE
   }
 }
 
-transform "remove_block_content" attribute_removed {
+transform "remove_block_element" attribute_removed {
   for_each             = try(local.attribute_removed_addresses, [])
   target_block_address = each.value
   paths                = local.diffs[local.all_resources[each.value].mptf.block_labels[0]].deleted
   depends_on           = [transform.regex_replace_expression.simply_renamed]
 }
 
-transform rename_attribute enable_to_enabled {
+transform rename_block_element enable_to_enabled {
   dynamic "rename" {
     for_each = toset(local.enable_to_enabled_blocks)
     content {
@@ -1114,23 +1184,44 @@ transform regex_replace_expression enable_to_enabled {
   for_each    = toset(local.enable_to_enabled_blocks)
   regex       = "${each.value.mptf.block_labels[0]}\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?${each.value.from}"
   replacement = "${each.value.mptf.block_labels[0]}.$${1}$${2}$${3}$${4}$${5}${each.value.to}"
-  depends_on  = [transform.rename_attribute.enable_to_enabled]
+  depends_on  = [transform.rename_block_element.enable_to_enabled]
 }
 
-transform rename_attribute simply_renamed {
+transform rename_block_element simply_renamed {
   dynamic "rename" {
     for_each = local.simply_renamed
     content {
       resource_type  = rename.value.resource_type
-      attribute_path = [rename.value.from]
+      attribute_path = split(".", rename.value.from)
       new_name       = rename.value.to
     }
   }
+  depends_on = [transform.remove_block_element.monitor_diagnostic_setting]
 }
 
 transform regex_replace_expression simply_renamed {
-  for_each    = local.simply_renamed
+  for_each    = [for rename in local.simply_renamed : rename if !strcontains(rename.from, ".")]
   regex       = "${each.value.resource_type}\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?${each.value.from}"
   replacement = "${each.value.resource_type}.$${1}$${2}$${3}$${4}$${5}${each.value.to}"
-  depends_on  = [transform.rename_attribute.simply_renamed]
+  depends_on  = [transform.rename_block_element.simply_renamed]
+}
+
+locals {
+  middle_path_regex = "\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?"
+}
+
+transform regex_replace_expression azurerm_linux_virtual_machine_scale_set_gallery_application {
+  for_each = tomap({
+    "package_reference_id" : "version_id",
+    "configuration_reference_blob_uri" : "configuration_blob_uri",
+  })
+  regex       = "azurerm_linux_virtual_machine_scale_set\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?gallery_applications(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?${each.key}"
+  replacement = "azurerm_linux_virtual_machine_scale_set.$${1}$${2}$${3}$${4}$${5}gallery_application$${6}$${7}$${8}${each.value}"
+  depends_on  = [transform.rename_block_element.simply_renamed]
+}
+
+transform remove_block_element monitor_diagnostic_setting {
+  for_each = local.monitor_diagnostic_setting_resource_addresses
+  target_block_address = each.value
+  paths                = ["log.enabled"]
 }

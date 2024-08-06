@@ -108,3 +108,173 @@ resource "azurerm_kubernetes_cluster" "example" {
 locals {
   swap_file_size_mb = azurerm_kubernetes_cluster.example[0].default_node_pool[0].linux_os_config[0].fake_block[0].swap_file_size_mb
 }
+
+resource "azurerm_container_app_job" "example" {
+  name                         = "example-container-app-job"
+  location                     = azurerm_resource_group.example.location
+  resource_group_name          = azurerm_resource_group.example.name
+  container_app_environment_id = azurerm_container_app_environment.example.id
+
+  replica_timeout_in_seconds = 10
+  replica_retry_limit        = 10
+  registries {
+    username             = "myuser"
+    password_secret_name = "mypassword"
+  }
+  dynamic "secrets" {
+    for_each = var.secret_value == null ? [] : [var.secret_value]
+    content {
+      name  = "secret"
+      value = sensitive(secrets.value)
+    }
+  }
+  manual_trigger_config {
+    parallelism              = 4
+    replica_completion_count = 1
+  }
+
+  template {
+    container {
+      image = "repo/testcontainerAppsJob0:v1"
+      name  = "testcontainerappsjob0"
+      readiness_probe {
+        transport = "HTTP"
+        port      = 5000
+      }
+
+      liveness_probe {
+        transport = "HTTP"
+        port      = 5000
+        path      = "/health"
+
+        header {
+          name  = "Cache-Control"
+          value = "no-cache"
+        }
+
+        initial_delay           = 5
+        interval_seconds        = 20
+        timeout                 = 2
+        failure_count_threshold = 1
+      }
+      startup_probe {
+        transport = "TCP"
+        port      = 5000
+      }
+
+      cpu    = 0.5
+      memory = "1Gi"
+    }
+  }
+}
+
+resource "azurerm_linux_virtual_machine_scale_set" "example" {
+  count               = 1
+  name                = "example-vmss"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+  sku                 = "Standard_F2"
+  instances           = 1
+  admin_username      = "adminuser"
+
+  admin_ssh_key {
+    username   = "adminuser"
+    public_key = local.first_public_key
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "0001-com-ubuntu-server-jammy"
+    sku       = "22_04-lts"
+    version   = "latest"
+  }
+
+  os_disk {
+    storage_account_type = "Standard_LRS"
+    caching              = "ReadWrite"
+  }
+
+  network_interface {
+    name    = "example"
+    primary = true
+
+    ip_configuration {
+      name      = "internal"
+      primary   = true
+      subnet_id = azurerm_subnet.internal.id
+    }
+  }
+  dynamic "gallery_applications" {
+    for_each = var.gallery_applications == null ? [] : [var.gallery_applications]
+    content {
+      package_reference_id             = gallery_applications.value.package_reference_id
+      configuration_reference_blob_uri = gallery_applications.value.configuration_reference_blob_uri
+      order                            = gallery_applications.value.order
+      tag                              = gallery_applications.value.tag
+    }
+  }
+}
+
+locals {
+  gallery_applications_package_reference_id             = azurerm_linux_virtual_machine_scale_set.example[0].gallery_applications[0].package_reference_id
+  gallery_applications_configuration_reference_blob_uri = azurerm_linux_virtual_machine_scale_set.example[0].gallery_applications[0].configuration_reference_blob_uri
+}
+
+resource "azurerm_monitor_aad_diagnostic_setting" "example" {
+  name               = "setting1"
+  storage_account_id = azurerm_storage_account.example.id
+  log {
+    enabled  = true
+    category = "SignInLogs"
+    retention_policy {
+      enabled = true
+      days    = 1
+    }
+  }
+  log {
+    enabled  = true
+    category = "AuditLogs"
+    retention_policy {
+      enabled = true
+      days    = 1
+    }
+  }
+  log {
+    enabled  = true
+    category = "NonInteractiveUserSignInLogs"
+    retention_policy {
+      enabled = true
+      days    = 1
+    }
+  }
+  log {
+    enabled  = true
+    category = "ServicePrincipalSignInLogs"
+    retention_policy {
+      enabled = true
+      days    = 1
+    }
+  }
+}
+
+resource "azurerm_monitor_diagnostic_setting" "example" {
+  name               = "example"
+  target_resource_id = azurerm_key_vault.example.id
+  storage_account_id = azurerm_storage_account.example.id
+
+  log {
+    category = "AuditEvent"
+    enabled  = false
+    retention_policy {
+      enabled = false
+    }
+  }
+
+  metric {
+    category = "AllMetrics"
+
+    retention_policy {
+      enabled = false
+    }
+  }
+}
