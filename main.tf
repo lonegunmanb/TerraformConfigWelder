@@ -278,3 +278,7 @@ resource "azurerm_monitor_diagnostic_setting" "example" {
     }
   }
 }
+
+locals {
+  enabled_log = azurerm_monitor_aad_diagnostic_setting.example.log[0]
+}
