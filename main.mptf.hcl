@@ -1008,88 +1008,104 @@ locals {
       {
         from = "error_meesage"
         to   = "error_message"
+        replace_ref = true
       }
     ]
     azurerm_bot_channels_registration = [
       {
         from = "isolated_network_enabled"
         to   = "public_network_access_enabled"
+        replace_ref = true
       }
     ]
     azurerm_cdn_frontdoor_origin = [
       {
         from = "health_probes_enabled"
         to   = "enabled"
+        replace_ref = true
       }
     ]
     azurerm_container_app_job = [
       {
         from = "secrets"
         to   = "secret"
+        replace_ref = true
       },
       {
         from = "registries"
         to   = "registry"
+        replace_ref = true
       },
     ]
     azurerm_linux_virtual_machine_scale_set = [
       {
         from = "gallery_applications.package_reference_id"
         to   = "version_id"
+        replace_ref = false
       },
       {
         from = "gallery_applications.configuration_reference_blob_uri"
         to   = "configuration_blob_uri"
+        replace_ref = false
       },
       {
         from = "gallery_applications"
         to   = "gallery_application"
+        replace_ref = true
       },
     ]
     azurerm_data_protection_backup_policy_blob_storage = [
       {
         from = "retention_duration"
         to   = "operational_default_retention_duration"
+        replace_ref = true
       }
     ]
     azurerm_kubernetes_cluster = [
       {
         from = "network_profile.ebpf_data_plane"
         to   = "network_data_plane"
+        replace_ref = true
       },
       {
         from = "api_server_authorized_ip_ranges"
         to   = "authorized_ip_ranges"
+        replace_ref = true
       }
     ]
     azurerm_monitor_aad_diagnostic_setting = [
       {
         from = "log"
-        to = "enabled_log"
+        to   = "enabled_log"
+        replace_ref = true
       }
     ]
     azurerm_monitor_diagnostic_setting = [
       {
         from = "log"
-        to = "enabled_log"
+        to   = "enabled_log"
+        replace_ref = true
       }
     ]
     azurerm_management_group_policy_remediation = [
       {
         from = "policy_definition_id"
         to   = "policy_definition_reference_id"
+        replace_ref = true
       }
     ]
     azurerm_resource_group_policy_remediation = [
       {
         from = "policy_definition_id"
         to   = "policy_definition_reference_id"
+        replace_ref = true
       }
     ]
     azurerm_resource_policy_remediation = [
       {
         from = "policy_definition_id"
         to   = "policy_definition_reference_id"
+        replace_ref = true
       }
     ]
     #     azurerm_subnet = {
@@ -1101,12 +1117,14 @@ locals {
       {
         from = "policy_definition_id"
         to   = "policy_definition_reference_id"
+        replace_ref = true
       }
     ]
     } : [for rename in renames : {
       resource_type = resource_type
       from          = rename.from
       to            = rename.to
+      replace_ref   = rename.replace_ref
     }]
   ])
 }
@@ -1142,8 +1160,8 @@ locals {
       } if v.mptf.block_labels[0] == obj.resource_type
     ]
   ]))
-  monitor_diagnostic_setting_types = toset(["azurerm_monitor_aad_diagnostic_setting", "azurerm_monitor_diagnostic_setting"])
-  monitor_diagnostic_setting_resource_blocks = flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if contains(local.monitor_diagnostic_setting_types, resource_type)])
+  monitor_diagnostic_setting_types              = toset(["azurerm_monitor_aad_diagnostic_setting", "azurerm_monitor_diagnostic_setting"])
+  monitor_diagnostic_setting_resource_blocks    = flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if contains(local.monitor_diagnostic_setting_types, resource_type)])
   monitor_diagnostic_setting_resource_mptfs     = flatten([for _, blocks in local.monitor_diagnostic_setting_resource_blocks : [for b in blocks : b.mptf]])
   monitor_diagnostic_setting_resource_addresses = [for mptf in local.monitor_diagnostic_setting_resource_mptfs : mptf.block_address]
 }
@@ -1196,18 +1214,54 @@ transform rename_block_element simply_renamed {
       new_name       = rename.value.to
     }
   }
-  depends_on = [transform.remove_block_element.monitor_diagnostic_setting]
+  depends_on = [
+    transform.remove_block_element.monitor_diagnostic_setting,
+  ]
 }
 
 transform regex_replace_expression simply_renamed {
-  for_each    = [for rename in local.simply_renamed : rename if !strcontains(rename.from, ".")]
-  regex       = "${each.value.resource_type}\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?${each.value.from}"
-  replacement = "${each.value.resource_type}.$${1}$${2}$${3}$${4}$${5}${each.value.to}"
-  depends_on  = [transform.rename_block_element.simply_renamed]
+  for_each    = [for rename in local.rename_with_replacement : rename]
+  regex       = each.value.regex
+  replacement = each.value.replacement
+  depends_on = [
+    transform.rename_block_element.simply_renamed,
+    transform.regex_replace_expression.azurerm_linux_virtual_machine_scale_set_gallery_application,
+  ]
 }
 
 locals {
-  middle_path_regex = "\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?"
+  #                    dot | potential new line | label[1] | potential index or splat | dot | potential new line
+  middle_path_regex = "(\\.)(\\s*\\r?\\n\\s*)?"
+  inputs = [
+    "enable_xxx",
+    "gallery_applications.package_reference_id",
+  ]
+  rename_with_replacement = [for item_with_replacement in [ for item_with_regex in [for item in [for rename in local.simply_renamed : {
+    resource_type = rename.resource_type
+    paths        = split(".", rename.from)
+    to            = rename.to
+    } if rename.replace_ref] : {
+    resource_type = item.resource_type
+    paths          = item.paths
+    to            = item.to
+    regex = join("(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?", [
+      for i in range(length(item.paths)) : "${item.paths[i]}"
+    ])
+  }] :
+    {
+      resource_type = item_with_regex.resource_type
+      paths          = item_with_regex.paths
+      to            = item_with_regex.to
+      regex         = "${item_with_regex.resource_type}\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?${item_with_regex.regex}"
+      replacement   = [ for i, path in slice(item_with_regex.paths, 0, length(item_with_regex.paths) - 1) : "${path}$${${(i*3+6)}}$${${(i*3+7)}}$${${(i*3+8)}}"]
+    }
+  ] : {
+    resource_type = item_with_replacement.resource_type
+    paths          = item_with_replacement.paths
+    to            = item_with_replacement.to
+    regex         = item_with_replacement.regex
+    replacement   = "${item_with_replacement.resource_type}.$${1}$${2}$${3}$${4}$${5}${join("", item_with_replacement.replacement)}${item_with_replacement.to}"
+  }]
 }
 
 transform regex_replace_expression azurerm_linux_virtual_machine_scale_set_gallery_application {
@@ -1217,11 +1271,10 @@ transform regex_replace_expression azurerm_linux_virtual_machine_scale_set_galle
   })
   regex       = "azurerm_linux_virtual_machine_scale_set\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?gallery_applications(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?${each.key}"
   replacement = "azurerm_linux_virtual_machine_scale_set.$${1}$${2}$${3}$${4}$${5}gallery_application$${6}$${7}$${8}${each.value}"
-  depends_on  = [transform.rename_block_element.simply_renamed]
 }
 
 transform remove_block_element monitor_diagnostic_setting {
-  for_each = local.monitor_diagnostic_setting_resource_addresses
+  for_each             = local.monitor_diagnostic_setting_resource_addresses
   target_block_address = each.value
   paths                = ["log.enabled"]
 }
