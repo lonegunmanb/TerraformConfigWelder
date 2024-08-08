@@ -10,17 +10,22 @@ Pusu leverages [Mapotf](https://github.com/Azure/mapotf) configuration files wri
 - Renaming attributes and nested blocks.
 - Updating all references to renamed properties in expressions.
 
-## Features
-
-- **Automated Configuration Updates**: Pusu automates the process of updating Terraform configurations based on the upgrade guide, reducing the manual effort required.
-- **Schema Migration**: It handles schema migrations by modifying the configuration files to align with the new schema.
-- **Reference Updates**: Pusu ensures that all references to renamed properties are updated throughout the configuration.
-
 ## Known Limitations
 
 1. **HCL Only**: Pusu currently supports only HCL files. JSON files are not supported at this time.
 2. **Nested Block Renaming**: Pusu cannot use a renamed nested block name to match elements. For example, if you rename `foo` to `bar`, you cannot match `name` under the original `foo` block using `bar.name`.
 
-## Conclusion
+## Install Mapotf
 
-Pusu is a powerful tool for managing Terraform provider upgrades, automating the process of updating configurations to comply with new schemas and reducing the burden on developers. By following the upgrade guides defined in Mapotf configuration files, Pusu ensures a smooth transition during major version upgrades.
+You can install mapotf by the following command(Assuming you have installed Golang >= 1.22.0):
+
+```shell
+go install github.com/Azure/mapoft@latest
+```
+
+We've also provided a devcontainer so you're welcomed to try Pusu in GitHub CodeSpace.
+
+## How to
+
+* AzureRM
+  - [v3 to v4](azurerm/v3_v4/readme.md)
