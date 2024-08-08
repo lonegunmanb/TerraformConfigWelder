@@ -12,3 +12,9 @@ mapotf transform -r --mptf-dir . --tf-dir .
 `mapotf init` is actually `terraform init` under the hood, and `mapotf transform` is the command to start the transformation process. `-r` means recursive mode, which would transform content inside `sub_module` too. And `--mptf-dir` and `--tf-dir` are the directories where the Mapotf configuration files and Terraform configuration files are located, respectively.
 
 You can try yourself and then compare the changes in the Terraform configuration files.
+
+Finally, you can always revert changes made by Mapotf by `reset` command: 
+
+```Shell
+mapotf reset
+```
