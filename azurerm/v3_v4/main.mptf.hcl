@@ -1276,6 +1276,7 @@ transform remove_block_element monitor_diagnostic_setting {
 
 locals {
   subnet_resource_blocks    = flatten([for _, blocks in flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if resource_type == "azurerm_subnet"]) : [for b in blocks : b]])
+  subnet_resource_blocks_map = { for block in local.subnet_resource_blocks : block.mptf.block_address => block }
   subnet_resource_addresses = [for block in local.subnet_resource_blocks : block.mptf.block_address]
   subnet_enforce_private_link_endpoint_network_policies = {
     for block in local.subnet_resource_blocks : block.mptf.block_address => try(block.enforce_private_link_endpoint_network_policies, "false")
@@ -1326,6 +1327,23 @@ transform "update_in_place" subnet_private_endpoint_network_policies {
   for_each = try(local.subnet_private_endpoint_network_value, [])
   target_block_address = each.key
   asstring {
-    private_endpoint_network_policies = each.value
+    private_endpoint_network_policies = coalesce(try(local.subnet_resource_blocks_map[each.key].private_endpoint_network_policies, null), each.value)
   }
+}
+
+locals {
+  subnet_deprecated_attributes = [
+    "private_endpoint_network_policies_enabled",
+    "enforce_private_link_endpoint_network_policies",
+    "enforce_private_link_service_network_policies",
+  ]
+}
+
+transform "remove_block_element" subnet_deprecated_attributes {
+  for_each = local.subnet_resource_addresses
+  target_block_address = each.value
+  paths                = local.subnet_deprecated_attributes
+  depends_on = [
+    transform.update_in_place.subnet_private_endpoint_network_policies,
+  ]
 }

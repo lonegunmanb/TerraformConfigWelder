@@ -312,7 +312,7 @@ resource "azurerm_subnet" "example" {
   enforce_private_link_service_network_policies  = var.enforce_private_link_service_network_policies
   private_endpoint_network_policies_enabled      = var.private_endpoint_network_policies_enabled
   private_link_service_network_policies_enabled  = var.private_link_service_network_policies_enabled
-
+  private_endpoint_network_policies = var.abc
   delegation {
     name = "delegation"
 
