@@ -1006,117 +1006,112 @@ locals {
   simply_renamed = flatten([for resource_type, renames in {
     azurerm_automation_software_update_configuration = [
       {
-        from = "error_meesage"
-        to   = "error_message"
+        from        = "error_meesage"
+        to          = "error_message"
         replace_ref = true
       }
     ]
     azurerm_bot_channels_registration = [
       {
-        from = "isolated_network_enabled"
-        to   = "public_network_access_enabled"
+        from        = "isolated_network_enabled"
+        to          = "public_network_access_enabled"
         replace_ref = true
       }
     ]
     azurerm_cdn_frontdoor_origin = [
       {
-        from = "health_probes_enabled"
-        to   = "enabled"
+        from        = "health_probes_enabled"
+        to          = "enabled"
         replace_ref = true
       }
     ]
     azurerm_container_app_job = [
       {
-        from = "secrets"
-        to   = "secret"
+        from        = "secrets"
+        to          = "secret"
         replace_ref = true
       },
       {
-        from = "registries"
-        to   = "registry"
+        from        = "registries"
+        to          = "registry"
         replace_ref = true
       },
     ]
     azurerm_linux_virtual_machine_scale_set = [
       {
-        from = "gallery_applications.package_reference_id"
-        to   = "version_id"
+        from        = "gallery_applications.package_reference_id"
+        to          = "version_id"
         replace_ref = false
       },
       {
-        from = "gallery_applications.configuration_reference_blob_uri"
-        to   = "configuration_blob_uri"
+        from        = "gallery_applications.configuration_reference_blob_uri"
+        to          = "configuration_blob_uri"
         replace_ref = false
       },
       {
-        from = "gallery_applications"
-        to   = "gallery_application"
+        from        = "gallery_applications"
+        to          = "gallery_application"
         replace_ref = true
       },
     ]
     azurerm_data_protection_backup_policy_blob_storage = [
       {
-        from = "retention_duration"
-        to   = "operational_default_retention_duration"
+        from        = "retention_duration"
+        to          = "operational_default_retention_duration"
         replace_ref = true
       }
     ]
     azurerm_kubernetes_cluster = [
       {
-        from = "network_profile.ebpf_data_plane"
-        to   = "network_data_plane"
+        from        = "network_profile.ebpf_data_plane"
+        to          = "network_data_plane"
         replace_ref = true
       },
       {
-        from = "api_server_authorized_ip_ranges"
-        to   = "authorized_ip_ranges"
+        from        = "api_server_authorized_ip_ranges"
+        to          = "authorized_ip_ranges"
         replace_ref = true
       }
     ]
     azurerm_monitor_aad_diagnostic_setting = [
       {
-        from = "log"
-        to   = "enabled_log"
+        from        = "log"
+        to          = "enabled_log"
         replace_ref = true
       }
     ]
     azurerm_monitor_diagnostic_setting = [
       {
-        from = "log"
-        to   = "enabled_log"
+        from        = "log"
+        to          = "enabled_log"
         replace_ref = true
       }
     ]
     azurerm_management_group_policy_remediation = [
       {
-        from = "policy_definition_id"
-        to   = "policy_definition_reference_id"
+        from        = "policy_definition_id"
+        to          = "policy_definition_reference_id"
         replace_ref = true
       }
     ]
     azurerm_resource_group_policy_remediation = [
       {
-        from = "policy_definition_id"
-        to   = "policy_definition_reference_id"
+        from        = "policy_definition_id"
+        to          = "policy_definition_reference_id"
         replace_ref = true
       }
     ]
     azurerm_resource_policy_remediation = [
       {
-        from = "policy_definition_id"
-        to   = "policy_definition_reference_id"
+        from        = "policy_definition_id"
+        to          = "policy_definition_reference_id"
         replace_ref = true
       }
     ]
-    #     azurerm_subnet = {
-    #       "enforce_private_link_endpoint_network_policies" = "private_endpoint_network_policies"
-    #       "enforce_private_link_service_network_policies"  = "private_link_service_network_policies_enabled"
-    #       "private_endpoint_network_policies_enabled"      = "private_endpoint_network_policies"
-    #     }
     azurerm_subscription_policy_remediation = [
       {
-        from = "policy_definition_id"
-        to   = "policy_definition_reference_id"
+        from        = "policy_definition_id"
+        to          = "policy_definition_reference_id"
         replace_ref = true
       }
     ]
@@ -1236,28 +1231,28 @@ locals {
     "enable_xxx",
     "gallery_applications.package_reference_id",
   ]
-  rename_with_replacement = [for item_with_replacement in [ for item_with_regex in [for item in [for rename in local.simply_renamed : {
+  rename_with_replacement = [for item_with_replacement in [for item_with_regex in [for item in [for rename in local.simply_renamed : {
     resource_type = rename.resource_type
-    paths        = split(".", rename.from)
+    paths         = split(".", rename.from)
     to            = rename.to
     } if rename.replace_ref] : {
     resource_type = item.resource_type
-    paths          = item.paths
+    paths         = item.paths
     to            = item.to
     regex = join("((?:\\[\\s*[^]]+\\s*\\]|\\.\\*)?)(\\.)(\\s*\\r?\\n\\s*)?", [
       for i in range(length(item.paths)) : "${item.paths[i]}"
     ])
-  }] :
+    }] :
     {
       resource_type = item_with_regex.resource_type
-      paths          = item_with_regex.paths
+      paths         = item_with_regex.paths
       to            = item_with_regex.to
       regex         = "${item_with_regex.resource_type}\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?${item_with_regex.regex}"
-      replacement   = [ for i, path in slice(item_with_regex.paths, 0, length(item_with_regex.paths) - 1) : "${path}$${${(i*3+6)}}$${${(i*3+7)}}$${${(i*3+8)}}"]
+      replacement   = [for i, path in slice(item_with_regex.paths, 0, length(item_with_regex.paths) - 1) : "${path}$${${(i * 3 + 6)}}$${${(i * 3 + 7)}}$${${(i * 3 + 8)}}"]
     }
-  ] : {
+    ] : {
     resource_type = item_with_replacement.resource_type
-    paths          = item_with_replacement.paths
+    paths         = item_with_replacement.paths
     to            = item_with_replacement.to
     regex         = item_with_replacement.regex
     replacement   = "${item_with_replacement.resource_type}.$${1}$${2}$${3}$${4}$${5}${join("", item_with_replacement.replacement)}${item_with_replacement.to}"
@@ -1277,4 +1272,60 @@ transform remove_block_element monitor_diagnostic_setting {
   for_each             = local.monitor_diagnostic_setting_resource_addresses
   target_block_address = each.value
   paths                = ["log.enabled"]
+}
+
+locals {
+  subnet_resource_blocks    = flatten([for _, blocks in flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if resource_type == "azurerm_subnet"]) : [for b in blocks : b]])
+  subnet_resource_addresses = [for block in local.subnet_resource_blocks : block.mptf.block_address]
+  subnet_enforce_private_link_endpoint_network_policies = {
+    for block in local.subnet_resource_blocks : block.mptf.block_address => try(block.enforce_private_link_endpoint_network_policies, "false")
+  }
+  subnet_enforce_private_link_service_network_policies = {
+    for block in local.subnet_resource_blocks : block.mptf.block_address => try(block.enforce_private_link_service_network_policies, "false")
+  }
+  subnet_private_endpoint_network_policies_enabled = {
+    for block in local.subnet_resource_blocks : block.mptf.block_address => try(block.private_endpoint_network_policies_enabled, "false")
+  }
+  subnet_private_link_service_network_policies_enabled = {
+    for block in local.subnet_resource_blocks : block.mptf.block_address => try(block.private_link_service_network_policies_enabled, "false")
+  }
+  subnet_private_endpoint_network_policies = {
+    for block in local.subnet_resource_blocks : block.mptf.block_address => try(block.private_endpoint_network_policies, "null")
+  }
+  subnet_enforce = {
+    for block in local.subnet_resource_blocks : block.mptf.block_address => try("${tostring(block.enforce_private_link_endpoint_network_policies)}!=null", "false")
+  }
+  subnet_enable = {
+    for block in local.subnet_resource_blocks : block.mptf.block_address => try("${tostring(block.private_endpoint_network_policies_enabled)}!=null", "false")
+  }
+  subnet_enforce_service = {
+    for block in local.subnet_resource_blocks : block.mptf.block_address => join(" || ", [try("${tostring(block.enforce_private_link_service_network_policies)}!=null", "false"), try("${tostring(block.private_link_service_network_policies_enabled)}!=null", "false")])
+  }
+  subnet_private_endpoint_network_policies_ok = {
+    for block in local.subnet_resource_blocks : block.mptf.block_address => try("${tostring(block.private_endpoint_network_policies)}!=null", "false")
+  }
+  # enforceOk || enableOk || privateEndpointNetworkPoliciesOk
+  subnet_enforce_or_enable_or_private_endpoint_network_policies = {
+    for block in local.subnet_resource_blocks : block.mptf.block_address => join(" || ", [local.subnet_enforce[block.mptf.block_address], local.subnet_enable[block.mptf.block_address], local.subnet_private_endpoint_network_policies_ok[block.mptf.block_address]])
+  }
+  subnet_enforce_branch = {
+    for block in local.subnet_resource_blocks : block.mptf.block_address => "${try(block.enforce_private_link_endpoint_network_policies, false)} ? (\"Disabled\") : (\"Enabled\")"
+  }
+  subnet_enable_branch = {
+    for block in local.subnet_resource_blocks : block.mptf.block_address => "${try(block.private_endpoint_network_policies_enabled, false)} ? (\"Enabled\") : (\"Disabled\")"
+  }
+  subnet_private_endpoint_network_policies_branch = {
+    for block in local.subnet_resource_blocks : block.mptf.block_address => "${try(block.private_endpoint_network_policies, null)}"
+  }
+  subnet_private_endpoint_network_value = {
+    for block in local.subnet_resource_blocks : block.mptf.block_address => "(${local.subnet_enforce_or_enable_or_private_endpoint_network_policies[block.mptf.block_address]}) ? (${local.subnet_enforce[block.mptf.block_address]} ? (${local.subnet_enforce_branch[block.mptf.block_address]}) : ((${local.subnet_enable[block.mptf.block_address]}) ? (${local.subnet_enable_branch[block.mptf.block_address]}) : (${local.subnet_private_endpoint_network_policies[block.mptf.block_address]}))) : (\"Enabled\")"
+  }
+}
+
+transform "update_in_place" subnet_private_endpoint_network_policies {
+  for_each = try(local.subnet_private_endpoint_network_value, [])
+  target_block_address = each.key
+  asstring {
+    private_endpoint_network_policies = each.value
+  }
 }

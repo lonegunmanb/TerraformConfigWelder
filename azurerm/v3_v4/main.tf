@@ -107,7 +107,7 @@ resource "azurerm_kubernetes_cluster" "example" {
 
 locals {
   swap_file_size_mb = azurerm_kubernetes_cluster.example[0].default_node_pool[0].linux_os_config[0].swap_file_size_mb
-  ebpf_data_plane = one(azurerm_kubernetes_cluster.example[0].network_profile.*.ebpf_data_plane)
+  ebpf_data_plane   = one(azurerm_kubernetes_cluster.example[0].network_profile.*.ebpf_data_plane)
 }
 
 resource "azurerm_container_app_job" "example" {
@@ -287,13 +287,13 @@ locals {
 module "mod" {
   source = "./sub_module"
   kubernetes_cluster_default_node_pool = {
-    name = "default"
+    name    = "default"
     vm_size = "Standard_D2_v2"
   }
-  kubernetes_cluster_location = "eastus"
-  kubernetes_cluster_name = "test"
+  kubernetes_cluster_location            = "eastus"
+  kubernetes_cluster_name                = "test"
   kubernetes_cluster_resource_group_name = "testrg"
-    kubernetes_cluster_dns_prefix = "test"
+  kubernetes_cluster_dns_prefix          = "test"
   kubernetes_cluster_identity = {
     type = "SystemAssigned"
   }
@@ -301,4 +301,24 @@ module "mod" {
 
 provider "azurerm" {
   features {}
+}
+
+resource "azurerm_subnet" "example" {
+  name                                           = "example-subnet"
+  resource_group_name                            = azurerm_resource_group.example.name
+  virtual_network_name                           = azurerm_virtual_network.example.name
+  address_prefixes                               = ["10.0.1.0/24"]
+  enforce_private_link_endpoint_network_policies = var.subnet_enforce_private_link_endpoint_network_policies
+  enforce_private_link_service_network_policies  = var.enforce_private_link_service_network_policies
+  private_endpoint_network_policies_enabled      = var.private_endpoint_network_policies_enabled
+  private_link_service_network_policies_enabled  = var.private_link_service_network_policies_enabled
+
+  delegation {
+    name = "delegation"
+
+    service_delegation {
+      name    = "Microsoft.ContainerInstance/containerGroups"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action", "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action"]
+    }
+  }
 }
