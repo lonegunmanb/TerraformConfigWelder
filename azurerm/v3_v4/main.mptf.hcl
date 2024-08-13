@@ -1322,7 +1322,7 @@ locals {
     for key, block in local.subnet_resource_blocks_map : key => "${try(block.private_endpoint_network_policies, null)}"
   }
   subnet_private_endpoint_network_value = {
-    for key, block in local.subnet_resource_blocks_map : key => "(${local.subnet_enforce_or_enable_or_private_endpoint_network_policies[block.mptf.block_address]}) ? (${local.subnet_enforce[block.mptf.block_address]} ? (${local.subnet_enforce_branch[block.mptf.block_address]}) : ((${local.subnet_enable[block.mptf.block_address]}) ? (${local.subnet_enable_branch[block.mptf.block_address]}) : (${local.subnet_private_endpoint_network_policies[block.mptf.block_address]}))) : (\"Enabled\")"
+    for key, block in local.subnet_resource_blocks_map : key => "(${local.subnet_enforce_or_enable_or_private_endpoint_network_policies[block.mptf.block_address]}) ? (${local.subnet_enable[block.mptf.block_address]} ? (${local.subnet_enable_branch[block.mptf.block_address]}) : ((${local.subnet_enforce[block.mptf.block_address]}) ? (${local.subnet_enforce_branch[block.mptf.block_address]}) : (${local.subnet_private_endpoint_network_policies[block.mptf.block_address]}))) : (\"Enabled\")"
   }
   subnet_enforce_service_branch = {
     for key, block in local.subnet_resource_blocks_map : key => "!${try(block.enforce_private_link_service_network_policies, false)}"
@@ -1331,7 +1331,7 @@ locals {
     for key, block in local.subnet_resource_blocks_map : key => "${try(block.private_link_service_network_policies_enabled, false)}"
   }
   subnet_private_link_service_network_value = {
-    for key, block in local.subnet_resource_blocks_map : key => "(${local.subnet_enforce_service[key]}) ? (${local.subnet_enforce_service_branch[key]}) : (${try(tostring(block.private_link_service_network_policies_enabled), true)})"
+    for key, block in local.subnet_resource_blocks_map : key => "(${local.subnet_enforce_service[key]}) ? (${local.subnet_enforce_service_branch[key]}) : (true)"
   }
 }
 
