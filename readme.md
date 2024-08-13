@@ -1,10 +1,10 @@
-# TerraformBreakingChangeHelper
+# TerraformJumper
 
-TBCH is an experimental tool designed to assist Terraform users in managing major version upgrades for a given Terraform provider. These upgrades often introduce breaking changes that require significant modifications to Terraform configurations. While providers may include schema migration mechanisms to handle Terraform State, Pusu helps by modifying the Terraform configuration files directly, following the upgrade guide.
+TerraformJumper is an experimental tool designed to assist Terraform users in managing major version upgrades for a given Terraform provider. These upgrades often introduce breaking changes that require significant modifications to Terraform configurations. While providers may include schema migration mechanisms to handle Terraform State, Pusu helps by modifying the Terraform configuration files directly, following the upgrade guide.
 
 ## Overview
 
-TBCH leverages [Mapotf](https://github.com/Azure/mapotf) configuration files written in HCL (HashiCorp Configuration Language) to define upgrade guides. These guides are interpreted and executed by the Mapotf engine to perform various tasks such as:
+TerraformJumper leverages [Mapotf](https://github.com/Azure/mapotf) configuration files written in HCL (HashiCorp Configuration Language) to define upgrade guides. These guides are interpreted and executed by the Mapotf engine to perform various tasks such as:
 
 - Removing deprecated attributes and nested blocks.
 - Renaming attributes and nested blocks.
@@ -23,7 +23,7 @@ You can install mapotf by the following command(Assuming you have installed Gola
 go install github.com/Azure/mapoft@latest
 ```
 
-We've also provided a devcontainer so you're welcomed to try Pusu in GitHub CodeSpace.
+We've also provided a devcontainer so you're welcomed to try TerraformJumper in GitHub CodeSpace.
 
 ## How to
 
