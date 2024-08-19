@@ -1398,28 +1398,19 @@ transform "remove_block_element" api_management_api_with_soap_pass_through {
 }
 
 locals {
-  key_vault_managed_hardware_security_module_role_assignment_resource_blocks     = flatten([for _, blocks in flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if resource_type == "azurerm_key_vault_managed_hardware_security_module_role_assignment"]) : [for b in blocks : b]])
+  key_vault_managed_hardware_security_module_role_assignment_resource_blocks          = flatten([for _, blocks in flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if resource_type == "azurerm_key_vault_managed_hardware_security_module_role_assignment"]) : [for b in blocks : b]])
   key_vault_managed_hardware_security_module_role_assignment_resource_block_providers = toset([for _, block in local.key_vault_managed_hardware_security_module_role_assignment_resource_blocks_map : try(block.provider, "azurerm")])
-  key_vault_managed_hardware_security_module_role_assignment_resource_blocks_map = { for block in local.key_vault_managed_hardware_security_module_role_assignment_resource_blocks : block.mptf.block_address => block if can(block.vault_base_url) && !can(block.managed_hsm_id)}
-  key_vault_managed_hardware_security_module_role_assignment_resource_addresses  = keys(local.key_vault_managed_hardware_security_module_role_assignment_resource_blocks_map)
-#   key_vault_managed_hardware_security_module_role_assignment_resource_blocks_with_count = {
-#     for key, block in local.key_vault_managed_hardware_security_module_role_assignment_resource_blocks_map : key => block if try(tostring(block.count) != null, false)
-#   }
-#   key_vault_managed_hardware_security_module_role_assignment_resource_blocks_with_for_each = {
-#     for key, block in local.key_vault_managed_hardware_security_module_role_assignment_resource_blocks_map : key => block if try(tostring(block.for_each) != null, false)
-#   }
-#   key_vault_managed_hardware_security_module_role_assignment_resource_blocks_without_count_for_each = {
-#     for key, block in local.key_vault_managed_hardware_security_module_role_assignment_resource_blocks_map : key => block if try(tostring(block.for_each) == "", true) || try(tostring(block.count) == "", true)
-#   }
+  key_vault_managed_hardware_security_module_role_assignment_resource_blocks_map      = { for block in local.key_vault_managed_hardware_security_module_role_assignment_resource_blocks : block.mptf.block_address => block if can(block.vault_base_url) && !can(block.managed_hsm_id) }
+  key_vault_managed_hardware_security_module_role_assignment_resource_addresses       = keys(local.key_vault_managed_hardware_security_module_role_assignment_resource_blocks_map)
 }
 
 transform "new_block" all_key_vault_hsm {
-  for_each = length(local.key_vault_managed_hardware_security_module_role_assignment_resource_blocks) > 0 ? toset(concat(tolist(local.key_vault_managed_hardware_security_module_role_assignment_resource_block_providers), ["azurerm"])) : []
+  for_each       = length(local.key_vault_managed_hardware_security_module_role_assignment_resource_blocks) > 0 ? toset(concat(tolist(local.key_vault_managed_hardware_security_module_role_assignment_resource_block_providers), ["azurerm"])) : []
   new_block_type = "data"
-  filename = local.key_vault_managed_hardware_security_module_role_assignment_resource_blocks[0].mptf.range.file_name
-  labels = ["azurerm_resources", replace("all_key_vault_hsm_${each.value}", ".", "_")]
+  filename       = local.key_vault_managed_hardware_security_module_role_assignment_resource_blocks[0].mptf.range.file_name
+  labels         = ["azurerm_resources", replace("all_key_vault_hsm_${each.value}", ".", "_")]
   asstring {
-    type = "\"Microsoft.KeyVault/managedHSMs\""
+    type     = "\"Microsoft.KeyVault/managedHSMs\""
     provider = each.value
   }
 }
@@ -1447,3 +1438,40 @@ transform "remove_block_element" key_vault_managed_hardware_security_module_role
   ]
 }
 
+locals {
+  automation_software_update_configuration_blocks                                               = flatten([for _, blocks in flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if resource_type == "azurerm_automation_software_update_configuration"]) : [for b in blocks : b]])
+  automation_software_update_configuration_blocks_with_linux_classification_included_only       = [for block in local.automation_software_update_configuration_blocks : block if try(block.linux[0].classification_included != "", false) && !can(block.linux[0].classifications_included)]
+  automation_software_update_configuration_blocks_with_windows_classification_included_only     = [for block in local.automation_software_update_configuration_blocks : block if try(block.windows[0].classification_included != "", false) && !can(block.windows[0].classifications_included)]
+  automation_software_update_configuration_blocks_with_linux_classification_included_only_map   = { for block in local.automation_software_update_configuration_blocks_with_linux_classification_included_only : block.mptf.block_address => block }
+  automation_software_update_configuration_blocks_with_windows_classification_included_only_map = { for block in local.automation_software_update_configuration_blocks_with_windows_classification_included_only : block.mptf.block_address => block }
+}
+
+transform "update_in_place" automation_software_update_configuration_linux_classification_included_only {
+  for_each             = local.automation_software_update_configuration_blocks_with_linux_classification_included_only_map
+  target_block_address = each.key
+  asstring {
+    linux {
+      classifications_included = "[${each.value.linux[0].classification_included}]"
+    }
+  }
+}
+
+transform "update_in_place" automation_software_update_configuration_windows_classification_included_only {
+  for_each             = local.automation_software_update_configuration_blocks_with_windows_classification_included_only_map
+  target_block_address = each.key
+  asstring {
+    windows {
+      classifications_included = "[${each.value.windows[0].classification_included}]"
+    }
+  }
+}
+
+transform "remove_block_element" automation_software_update_configuration {
+  for_each             = merge(local.automation_software_update_configuration_blocks_with_linux_classification_included_only_map, local.automation_software_update_configuration_blocks_with_windows_classification_included_only_map)
+  target_block_address = each.key
+  paths                = ["linux.classification_included", "windows.classification_included"]
+  depends_on = [
+    transform.update_in_place.automation_software_update_configuration_linux_classification_included_only,
+    transform.update_in_place.automation_software_update_configuration_windows_classification_included_only,
+  ]
+}

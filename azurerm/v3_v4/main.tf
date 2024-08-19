@@ -364,3 +364,45 @@ resource "azurerm_key_vault_managed_hardware_security_module_role_assignment" "t
   principal_id       = data.azurerm_client_config.current.object_id
   provider          = azurerm.alternate
 }
+
+resource "azurerm_automation_software_update_configuration" "linux_example" {
+  name                  = "example"
+  automation_account_id = azurerm_automation_account.example.id
+  operating_system      = "Linux"
+
+  linux {
+    classification_included = "Security"
+    excluded_packages       = ["apt"]
+    included_packages       = ["vim"]
+    reboot                  = "IfRequired"
+  }
+
+  pre_task {
+    source = azurerm_automation_runbook.example.name
+    parameters = {
+      COMPUTER_NAME = "Foo"
+    }
+  }
+
+  duration = "PT2H2M2S"
+}
+
+resource "azurerm_automation_software_update_configuration" "windowsexample" {
+  name                  = "example"
+  automation_account_id = azurerm_automation_account.example.id
+  operating_system      = "Linux"
+
+  windows {
+    classification_included = "${var.windows_update_configuration_classification},Critical"
+    reboot                  = "IfRequired"
+  }
+
+  pre_task {
+    source = azurerm_automation_runbook.example.name
+    parameters = {
+      COMPUTER_NAME = "Foo"
+    }
+  }
+
+  duration = "PT2H2M2S"
+}
