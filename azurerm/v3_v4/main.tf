@@ -414,3 +414,12 @@ resource "azurerm_bot_channel_web_chat" "example" {
 
   site_names = ["example", "example2"]
 }
+
+resource "azurerm_cdn_endpoint_custom_domain" "example" {
+  name            = "example-domain"
+  cdn_endpoint_id = azurerm_cdn_endpoint.example.id
+  host_name       = "${azurerm_dns_cname_record.example.name}.${data.azurerm_dns_zone.example.name}"
+  user_managed_https {
+    key_vault_certificate_id = var.azurerm_cdn_endpoint_custom_domain_key_vault_certificate_id
+  }
+}

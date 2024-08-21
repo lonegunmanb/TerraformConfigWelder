@@ -14,6 +14,6 @@ variable "azurerm_automation_software_update_configuration_toggle" {
 }
 
 variable "azurerm_bot_channel_web_chat_toggle" {
-  type = bool
+  type    = bool
   default = true
 }

@@ -112,6 +112,13 @@ locals {
           replace_ref = true
         }
       ]
+      azurerm_cdn_endpoint_custom_domain = [
+        {
+          from        = "user_managed_https.key_vault_certificate_id"
+          to          = "key_vault_secret_id"
+          replace_ref = true
+        }
+      ]
       } : [
       for rename in renames : {
         resource_type = resource_type
@@ -129,14 +136,16 @@ transform rename_block_element simply_renamed {
   dynamic "rename" {
     for_each = local.simply_renamed
     content {
-      resource_type  = rename.value.resource_type
-      attribute_path = split(".", rename.value.from)
-      new_name       = rename.value.to
+      resource_type               = rename.value.resource_type
+      attribute_path              = split(".", rename.value.from)
+      new_name                    = rename.value.to
+      rename_only_new_name_absent = true
     }
   }
   depends_on = [
     transform.remove_block_element.monitor_diagnostic_setting,
-    transform.regex_replace_expression.simply_renamed
+    transform.regex_replace_expression.simply_renamed,
+    transform.update_in_place.oc_removed,
   ]
 }
 
