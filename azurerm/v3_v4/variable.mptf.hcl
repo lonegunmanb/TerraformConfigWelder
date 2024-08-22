@@ -62,3 +62,8 @@ variable "azurerm_cosmosdb_account" {
   type    = bool
   default = true
 }
+
+variable "azurerm_cosmosdb_sql_container_toggle" {
+  type    = bool
+  default = true
+}

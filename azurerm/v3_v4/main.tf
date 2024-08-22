@@ -555,3 +555,33 @@ locals {
   azurerm_cosmosdb_account_connection_strings              = azurerm_cosmosdb_account.db[0].connection_strings
   azurerm_cosmosdb_account_enable_multiple_write_locations = azurerm_cosmosdb_account.db[0].enable_multiple_write_locations
 }
+
+resource "azurerm_cosmosdb_sql_container" "example" {
+  name                  = "example-container"
+  resource_group_name   = data.azurerm_cosmosdb_account.example.resource_group_name
+  account_name          = data.azurerm_cosmosdb_account.example.name
+  database_name         = azurerm_cosmosdb_sql_database.example.name
+  partition_key_path    = "/definition/id"
+  partition_key_version = 1
+  throughput            = 400
+
+  indexing_policy {
+    indexing_mode = "consistent"
+
+    included_path {
+      path = "/*"
+    }
+
+    included_path {
+      path = "/included/?"
+    }
+
+    excluded_path {
+      path = "/excluded/?"
+    }
+  }
+
+  unique_key {
+    paths = ["/definition/idlong", "/definition/idshort"]
+  }
+}
