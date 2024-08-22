@@ -39,16 +39,21 @@ variable "enable_to_enabled_toggle" {
 }
 
 variable "azurerm_subnet_toggle" {
-  type = bool
+  type    = bool
   default = true
 }
 
 variable "azurerm_api_management_api_toggle" {
-  type = bool
+  type    = bool
   default = true
 }
 
 variable "azurerm_linux_virtual_machine_scale_set_toggle" {
-  type = bool
+  type    = bool
+  default = true
+}
+
+variable "azurerm_container_registry_toggle" {
+  type    = bool
   default = true
 }

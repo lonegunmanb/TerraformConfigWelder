@@ -362,7 +362,7 @@ resource "azurerm_key_vault_managed_hardware_security_module_role_assignment" "t
   scope              = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.scope
   role_definition_id = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.resource_id
   principal_id       = data.azurerm_client_config.current.object_id
-  provider          = azurerm.alternate
+  provider           = azurerm.alternate
 }
 
 resource "azurerm_automation_software_update_configuration" "linux_example" {
@@ -455,4 +455,54 @@ resource "azurerm_container_group" "example" {
   tags = {
     environment = "testing"
   }
+}
+
+resource "azurerm_container_registry" "acr" {
+  name                = "containerRegistry1"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+  sku                 = "Premium"
+  admin_enabled       = false
+  georeplications {
+    location                = "East US"
+    zone_redundancy_enabled = true
+    tags                    = {}
+  }
+  georeplications {
+    location                = "North Europe"
+    zone_redundancy_enabled = true
+    tags                    = {}
+  }
+  retention_policy {
+    days = var.azurerm_container_registry_rention_in_days
+  }
+}
+
+resource "azurerm_container_registry" "acr" {
+  name                = "containerRegistry1"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+  sku                 = "Premium"
+  admin_enabled       = false
+  georeplications {
+    location                = "East US"
+    zone_redundancy_enabled = true
+    tags                    = {}
+  }
+  georeplications {
+    location                = "North Europe"
+    zone_redundancy_enabled = true
+    tags                    = {}
+  }
+  retention_policy {
+    days = var.azurerm_container_registry_rention_in_days
+  }
+  trust_policy {
+    enabled = var.azurerm_container_registry_trust_policy_enabled
+  }
+}
+
+locals {
+  retention_policy_days = azurerm_container_registry.acr[0].retention_policy[0].days
+  trust_policy_enabled  = azurerm_container_registry.acr[0].trust_policy[0].enabled
 }

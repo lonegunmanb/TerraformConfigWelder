@@ -3,6 +3,11 @@ locals {
     azurerm_cdn_endpoint_custom_domain = toset(
       ["user_managed_https.key_vault_certificate_id"]
     )
+    azurerm_container_registry = toset([
+      "retention_policy",
+      "trust_policy",
+      "network_rule_set.virtual_network",
+    ])
   }
   auto_generated_attribute_removed     = flatten([for _, blocks in flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if try(local.diffs[resource_type].deleted != null, false)]) : [for b in blocks : b]])
   auto_generated_attribute_removed_map = { for block in local.auto_generated_attribute_removed : block.mptf.block_address => block }
@@ -14,8 +19,8 @@ locals {
       "network_profile_id",
     ])
   }
-  extra_attribute_removed_blocks     = flatten([for _, blocks in flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if try(local.extra_attribute_removed[resource_type] != null, false)]) : [for b in blocks : b]])
-  extra_attribute_removed_map = { for block in local.extra_attribute_removed_blocks : block.mptf.block_address => block }
+  extra_attribute_removed_blocks = flatten([for _, blocks in flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if try(local.extra_attribute_removed[resource_type] != null, false)]) : [for b in blocks : b]])
+  extra_attribute_removed_map    = { for block in local.extra_attribute_removed_blocks : block.mptf.block_address => block }
 }
 
 transform "remove_block_element" auto_generated_attribute_removed {
