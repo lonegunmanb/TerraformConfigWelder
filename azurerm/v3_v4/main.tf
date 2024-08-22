@@ -506,3 +506,52 @@ locals {
   retention_policy_days = azurerm_container_registry.acr[0].retention_policy[0].days
   trust_policy_enabled  = azurerm_container_registry.acr[0].trust_policy[0].enabled
 }
+
+resource "azurerm_cosmosdb_account" "db" {
+  count               = 0
+  name                = "tfex-cosmos-db-${random_integer.ri.result}"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+  offer_type          = "Standard"
+  kind                = "MongoDB"
+
+  automatic_failover_enabled      = true
+  enable_multiple_write_locations = var.azurerm_cosmosdb_account_enable_multiple_write_locations
+
+  capabilities {
+    name = "EnableAggregationPipeline"
+  }
+
+  capabilities {
+    name = "mongoEnableDocLevelTTL"
+  }
+
+  capabilities {
+    name = "MongoDBv3.4"
+  }
+
+  capabilities {
+    name = "EnableMongo"
+  }
+
+  consistency_policy {
+    consistency_level       = "BoundedStaleness"
+    max_interval_in_seconds = 300
+    max_staleness_prefix    = 100000
+  }
+
+  geo_location {
+    location          = "eastus"
+    failover_priority = 1
+  }
+
+  geo_location {
+    location          = "westus"
+    failover_priority = 0
+  }
+}
+
+locals {
+  azurerm_cosmosdb_account_connection_strings              = azurerm_cosmosdb_account.db[0].connection_strings
+  azurerm_cosmosdb_account_enable_multiple_write_locations = azurerm_cosmosdb_account.db[0].enable_multiple_write_locations
+}

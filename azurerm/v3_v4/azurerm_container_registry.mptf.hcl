@@ -1,7 +1,6 @@
 locals {
   container_registry_resource_blocks     = flatten([for _, blocks in flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if resource_type == "azurerm_container_registry"]) : [for b in blocks : b]])
   container_registry_resource_blocks_map = { for block in local.container_registry_resource_blocks : block.mptf.block_address => block }
-  container_registry_resource_addresses  = keys(local.container_registry_resource_blocks_map)
   container_registry_with_regention_policy_dot_days_only = {
     for key, block in local.container_registry_resource_blocks_map : key => block if try(block.retention_policy != null, false) && !can(block.retention_policy_in_days)
   }

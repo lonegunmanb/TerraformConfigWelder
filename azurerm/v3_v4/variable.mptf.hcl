@@ -57,3 +57,8 @@ variable "azurerm_container_registry_toggle" {
   type    = bool
   default = true
 }
+
+variable "azurerm_cosmosdb_account" {
+  type    = bool
+  default = true
+}

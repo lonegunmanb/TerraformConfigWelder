@@ -34,6 +34,23 @@ locals {
           replace_ref = true
         },
       ]
+      azurerm_cosmosdb_account = [
+        {
+          from        = "enable_multiple_write_locations"
+          to          = "multiple_write_locations_enabled"
+          replace_ref = true
+        },
+        {
+          from        = "enable_free_tier"
+          to          = "free_tier_enabled"
+          replace_ref = true
+        },
+        {
+          from        = "enable_automatic_failover"
+          to          = "automatic_failover_enabled"
+          replace_ref = true
+        },
+      ]
       azurerm_linux_virtual_machine_scale_set = [
         {
           from        = "gallery_applications.package_reference_id"
