@@ -61,7 +61,7 @@ locals {
 }
 
 transform "update_in_place" subnet_private_endpoint_network_policies {
-  for_each             = try(local.subnet_private_endpoint_network_value, [])
+  for_each             = var.azurerm_subnet_toggle ? try(local.subnet_private_endpoint_network_value, tomap({})) : tomap({})
   target_block_address = each.key
   asstring {
     private_endpoint_network_policies = coalesce(try(local.subnet_resource_blocks_map[each.key].private_endpoint_network_policies, null), each.value)
@@ -69,7 +69,7 @@ transform "update_in_place" subnet_private_endpoint_network_policies {
 }
 
 transform "update_in_place" subnet_private_link_service_network_policies {
-  for_each             = try(local.subnet_private_link_service_network_value, [])
+  for_each             = var.azurerm_subnet_toggle ? try(local.subnet_private_link_service_network_value, tomap({})) : tomap({})
   target_block_address = each.key
   asstring {
     private_link_service_network_policies_enabled = coalesce(try(local.subnet_resource_blocks_map[each.key].private_link_service_network_policies_enabled, null), each.value)
@@ -88,7 +88,7 @@ locals {
 }
 
 transform "remove_block_element" subnet_deprecated_attributes {
-  for_each             = local.subnet_resource_addresses
+  for_each             = var.azurerm_subnet_toggle ? local.subnet_resource_addresses : []
   target_block_address = each.value
   paths                = local.subnet_deprecated_attributes
   depends_on = [

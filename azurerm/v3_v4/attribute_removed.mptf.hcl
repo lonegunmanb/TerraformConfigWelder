@@ -9,7 +9,7 @@ locals {
 }
 
 transform "remove_block_element" attribute_removed {
-  for_each             = try(local.attribute_removed_map, {})
+  for_each             = var.attribute_removed_toggle ? try(local.attribute_removed_map, {}) : tomap({})
   target_block_address = each.key
   paths                = try(setsubtract(local.diffs[each.value.mptf.block_labels[0]].deleted, local.attribute_removed_bypass[each.value.mptf.block_labels[0]]), local.diffs[each.value.mptf.block_labels[0]].deleted)
   depends_on           = [transform.regex_replace_expression.simply_renamed]

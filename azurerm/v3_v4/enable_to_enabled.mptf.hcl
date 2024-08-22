@@ -23,6 +23,7 @@ locals {
 
 
 transform rename_block_element enable_to_enabled {
+  for_each = var.enable_to_enabled_toggle ? ["enable_to_enabled"] : []
   dynamic "rename" {
     for_each = toset(local.enable_to_enabled_blocks)
     content {
@@ -34,7 +35,7 @@ transform rename_block_element enable_to_enabled {
 }
 
 transform regex_replace_expression enable_to_enabled {
-  for_each    = toset(local.enable_to_enabled_blocks)
+  for_each    = var.enable_to_enabled_toggle ? toset(local.enable_to_enabled_blocks) : []
   regex       = "${each.value.mptf.block_labels[0]}\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?${each.value.from}"
   replacement = "${each.value.mptf.block_labels[0]}.$${1}$${2}$${3}$${4}$${5}${each.value.to}"
   depends_on  = [transform.rename_block_element.enable_to_enabled]

@@ -5,7 +5,7 @@ locals {
 }
 
 transform "update_in_place" oc_removed {
-  for_each             = [] /*try(local.oc_removed_addresses, [])*/
+  for_each             = var.oc_removed_toggle ? try(local.oc_removed_addresses, []) : []
   target_block_address = each.value
   asstring {
     lifecycle {
