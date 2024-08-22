@@ -1,4 +1,9 @@
 locals {
+  extra_oc_removed = {
+    azurerm_kubernetes_cluster = [
+      "network_profile[0].load_balancer_profile[0].outbound_ip_prefix_ids",
+    ]
+  }
   oc_removed_arguments = flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if try(local.diffs[resource_type].oc_removed != null, false)])
   oc_removed_mptfs     = flatten([for _, blocks in local.oc_removed_arguments : [for b in blocks : b.mptf]])
   oc_removed_addresses = [for mptf in local.oc_removed_mptfs : mptf.block_address]
@@ -10,8 +15,8 @@ transform "update_in_place" oc_removed {
   asstring {
     lifecycle {
       ignore_changes = <<-IGNORE
-    %{if try(local.all_resources[each.value].lifecycle[0].ignore_changes != "", false)} [${trimsuffix(trimprefix(local.all_resources[each.value].lifecycle[0].ignore_changes, "["), "]")}, ${join(" ,", local.diffs[split(".", local.all_resources[each.value].mptf.terraform_address)[0]].oc_removed)}]
-    %{else} [${join(" ,", local.diffs[local.all_resources[each.value].mptf.block_labels[0]].oc_removed)}]
+    %{if try(local.all_resources[each.value].lifecycle[0].ignore_changes != "", false)} [${trimsuffix(trimprefix(local.all_resources[each.value].lifecycle[0].ignore_changes, "["), "]")}, ${join(" ,", local.diffs[split(".", local.all_resources[each.value].mptf.terraform_address)[0]].oc_removed, try(local.extra_oc_removed[local.all_resources[each.value].mptf.block_labels[0]], []))}]
+    %{else} [${join(" ,", local.diffs[local.all_resources[each.value].mptf.block_labels[0]].oc_removed, try(local.extra_oc_removed[local.all_resources[each.value].mptf.block_labels[0]], []))}]
     %{endif}
 IGNORE
     }

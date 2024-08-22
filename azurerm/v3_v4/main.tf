@@ -585,3 +585,26 @@ resource "azurerm_cosmosdb_sql_container" "example" {
     paths = ["/definition/idlong", "/definition/idshort"]
   }
 }
+
+resource "azurerm_databricks_workspace" "example" {
+  name                                  = "databricks-test"
+  resource_group_name                   = azurerm_resource_group.example.name
+  location                              = azurerm_resource_group.example.location
+  sku                                   = "standard"
+  network_security_group_rules_required = "AllRules"
+
+  tags = {
+    Environment = "Production"
+  }
+}
+
+resource "azurerm_dev_test_lab" "example" {
+  name                = "example-devtestlab"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+  storage_type        = "Premium"
+
+  tags = {
+    "Sydney" = "Australia"
+  }
+}

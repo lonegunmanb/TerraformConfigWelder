@@ -18,6 +18,9 @@ locals {
     azurerm_container_group = toset([
       "network_profile_id",
     ])
+    azurerm_hdinsight_kafka_cluster = toset([
+      "roles.kafka_management_node"
+    ])
   }
   extra_attribute_removed_blocks = flatten([for _, blocks in flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if try(local.extra_attribute_removed[resource_type] != null, false)]) : [for b in blocks : b]])
   extra_attribute_removed_map    = { for block in local.extra_attribute_removed_blocks : block.mptf.block_address => block }
