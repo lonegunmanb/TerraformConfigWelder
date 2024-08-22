@@ -214,11 +214,13 @@ resource "azurerm_linux_virtual_machine_scale_set" "example" {
       tag                              = gallery_applications.value.tag
     }
   }
+  scale_in_policy = var.azurerm_linux_virtual_machine_scale_set_scale_in_policy
 }
 
 locals {
-  gallery_applications_package_reference_id             = azurerm_linux_virtual_machine_scale_set.example[0].gallery_applications[0].package_reference_id
-  gallery_applications_configuration_reference_blob_uri = azurerm_linux_virtual_machine_scale_set.example[0].gallery_applications[0].configuration_reference_blob_uri
+  gallery_applications_package_reference_id               = azurerm_linux_virtual_machine_scale_set.example[0].gallery_applications[0].package_reference_id
+  gallery_applications_configuration_reference_blob_uri   = azurerm_linux_virtual_machine_scale_set.example[0].gallery_applications[0].configuration_reference_blob_uri
+  azurerm_linux_virtual_machine_scale_set_scale_in_policy = azurerm_linux_virtual_machine_scale_set.example[0].scale_in_policy
 }
 
 resource "azurerm_monitor_aad_diagnostic_setting" "example" {

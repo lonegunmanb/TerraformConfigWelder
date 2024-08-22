@@ -67,6 +67,11 @@ locals {
           to          = "gallery_application"
           replace_ref = true
         },
+        {
+          from        = "terminate_notification"
+          to          = "termination_notification"
+          replace_ref = true
+        }
       ]
       azurerm_data_protection_backup_policy_blob_storage = [
         {
@@ -101,6 +106,23 @@ locals {
           to          = "default_node_pool.auto_scaling_enabled"
           replace_ref = true
         }
+      ]
+      azurerm_kubernetes_cluster_node_pool = [
+        {
+          from        = "enable_auto_scaling"
+          to          = "auto_scaling_enabled"
+          replace_ref = true
+        },
+        {
+          from        = "enable_node_public_ip"
+          to          = "node_public_ip_enabled"
+          replace_ref = true
+        },
+        {
+          from        = "enable_host_encryption"
+          to          = "host_encryption_enabled"
+          replace_ref = true
+        },
       ]
       azurerm_monitor_aad_diagnostic_setting = [
         {
