@@ -3,6 +3,9 @@ locals {
     azurerm_kubernetes_cluster = [
       "network_profile[0].load_balancer_profile[0].outbound_ip_prefix_ids",
     ]
+    azurerm_machine_learning_datastore_datalake_gen2 = [
+      "authority_url",
+    ]
   }
   oc_removed_arguments = flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if try(local.diffs[resource_type].oc_removed != null, false)])
   oc_removed_mptfs     = flatten([for _, blocks in local.oc_removed_arguments : [for b in blocks : b.mptf]])

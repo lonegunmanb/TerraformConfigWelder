@@ -617,18 +617,18 @@ resource "azurerm_linux_web_app" "example" {
   location            = azurerm_service_plan.example.location
   service_plan_id     = azurerm_service_plan.example.id
 
-#   site_config {
-#     auto_heal_setting {
-#       trigger {
-#         slow_request {
-#           count      = 0
-#           interval   = ""
-#           time_taken = ""
-#           path = var.azurerm_linux_web_app_site_config_auto_heal_setting_trigger_slow_request_path
-#         }
-#       }
-#     }
-#   }
+  #   site_config {
+  #     auto_heal_setting {
+  #       trigger {
+  #         slow_request {
+  #           count      = 0
+  #           interval   = ""
+  #           time_taken = ""
+  #           path = var.azurerm_linux_web_app_site_config_auto_heal_setting_trigger_slow_request_path
+  #         }
+  #       }
+  #     }
+  #   }
   dynamic "site_config" {
     for_each = [1]
     content {
@@ -644,4 +644,23 @@ resource "azurerm_linux_web_app" "example" {
       }
     }
   }
+}
+
+resource "azurerm_machine_learning_workspace" "example" {
+  count                                        = 1
+  name                                         = "example-workspace"
+  location                                     = azurerm_resource_group.example.location
+  resource_group_name                          = azurerm_resource_group.example.name
+  application_insights_id                      = azurerm_application_insights.example.id
+  key_vault_id                                 = azurerm_key_vault.example.id
+  storage_account_id                           = azurerm_storage_account.example.id
+  public_access_behind_virtual_network_enabled = var.azurerm_machine_learning_workspace_public_access_behind_virtual_network_enabled
+
+  identity {
+    type = "SystemAssigned"
+  }
+}
+
+locals {
+  azurerm_machine_learning_workspace_public_access_behind_virtual_network_enabled = azurerm_machine_learning_workspace.example[0].public_access_behind_virtual_network_enabled
 }

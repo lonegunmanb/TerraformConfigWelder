@@ -124,6 +124,13 @@ locals {
           replace_ref = true
         },
       ]
+      azurerm_machine_learning_workspace = [
+        {
+          from        = "public_access_behind_virtual_network_enabled"
+          to          = "public_network_access_enabled"
+          replace_ref = true
+        }
+      ]
       azurerm_monitor_aad_diagnostic_setting = [
         {
           from        = "log"
