@@ -610,3 +610,38 @@ resource "azurerm_dev_test_lab" "example" {
     "Sydney" = "Australia"
   }
 }
+
+resource "azurerm_linux_web_app" "example" {
+  name                = "example"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_service_plan.example.location
+  service_plan_id     = azurerm_service_plan.example.id
+
+#   site_config {
+#     auto_heal_setting {
+#       trigger {
+#         slow_request {
+#           count      = 0
+#           interval   = ""
+#           time_taken = ""
+#           path = var.azurerm_linux_web_app_site_config_auto_heal_setting_trigger_slow_request_path
+#         }
+#       }
+#     }
+#   }
+  dynamic "site_config" {
+    for_each = [1]
+    content {
+      auto_heal_setting {
+        trigger {
+          slow_request {
+            count      = 0
+            interval   = ""
+            time_taken = ""
+            path       = var.azurerm_linux_web_app_site_config_auto_heal_setting_trigger_slow_request_path
+          }
+        }
+      }
+    }
+  }
+}

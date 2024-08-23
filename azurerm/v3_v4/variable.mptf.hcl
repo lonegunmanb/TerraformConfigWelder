@@ -67,3 +67,8 @@ variable "azurerm_cosmosdb_sql_container_toggle" {
   type    = bool
   default = true
 }
+
+variable "azurerm_linux_web_app_toggle" {
+  type    = bool
+  default = true
+}
