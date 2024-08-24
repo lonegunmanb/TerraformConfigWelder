@@ -735,3 +735,28 @@ locals {
   azurerm_sentinel_alert_rule_scheduled_incident_configuration_group_by_alert_details  = azurerm_sentinel_alert_rule_scheduled.example.incident_configuration[0].group_by_alert_details
   azurerm_sentinel_alert_rule_scheduled_incident_configuration_group_by_custom_details = azurerm_sentinel_alert_rule_scheduled.example.incident_configuration[0].group_by_custom_details
 }
+
+resource "azurerm_sentinel_log_analytics_workspace_onboarding" "singleton" {
+  workspace_name               = var.azurerm_sentinel_log_analytics_workspace_onboarding_workspace_name
+  resource_group_name          = var.azurerm_sentinel_log_analytics_workspace_onboarding_resource_group_name
+  customer_managed_key_enabled = false
+}
+
+resource "azurerm_sentinel_log_analytics_workspace_onboarding" "count" {
+  count                        = var.azurerm_sentinel_log_analytics_workspace_onboarding_count
+  workspace_name               = local.azurerm_sentinel_log_analytics_workspace_onboarding_count_names[count.index]
+  resource_group_name          = local.azurerm_sentinel_log_analytics_workspace_onboarding_count_rg_names[count.index]
+  customer_managed_key_enabled = false
+}
+
+resource "azurerm_sentinel_log_analytics_workspace_onboarding" "for_each" {
+  for_each                     = var.azurerm_sentinel_log_analytics_workspace_onboarding_for_each
+  workspace_name               = each.value
+  resource_group_name          = each.value
+  customer_managed_key_enabled = false
+}
+
+locals {
+  azurerm_sentinel_log_analytics_workspace_onboarding_count_workspace_name         = azurerm_sentinel_log_analytics_workspace_onboarding.count[0].workspace_name
+  azurerm_sentinel_log_analytics_workspace_onboarding_for_each_resource_group_name = azurerm_sentinel_log_analytics_workspace_onboarding.for_each["a"].resource_group_name
+}

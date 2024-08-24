@@ -92,3 +92,8 @@ variable "azurerm_sentinel_alert_rule_scheduled_toggle" {
   type    = bool
   default = true
 }
+
+variable "azurerm_sentinel_log_analytics_workspace_onboarding_toggle" {
+  type    = bool
+  default = true
+}
