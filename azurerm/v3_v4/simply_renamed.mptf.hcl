@@ -187,6 +187,28 @@ locals {
           replace_ref = true
         }
       ]
+      azurerm_sentinel_alert_rule_scheduled = [
+        {
+          from        = "incident_configuration.create_incident"
+          to          = "create_incident_enabled"
+          replace_ref = false
+        },
+        {
+          from        = "incident_configuration.group_by_entities"
+          to          = "by_entities"
+          replace_ref = false
+        },
+        {
+          from        = "incident_configuration.group_by_alert_details"
+          to          = "by_alert_details"
+          replace_ref = false
+        },
+        {
+          from        = "incident_configuration.group_by_custom_details"
+          to          = "by_custom_details"
+          replace_ref = false
+        },
+      ]
       } : [
       for rename in renames : {
         resource_type = resource_type
