@@ -24,6 +24,9 @@ locals {
     azurerm_kubernetes_fleet_manager = toset([
       "hub_profile"
     ])
+    azurerm_recovery_services_site_recovery_replicated_vm = toset([
+      "is_primary",
+    ])
   }
   extra_attribute_removed_blocks = flatten([for _, blocks in flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if try(local.extra_attribute_removed[resource_type] != null, false)]) : [for b in blocks : b]])
   extra_attribute_removed_map    = { for block in local.extra_attribute_removed_blocks : block.mptf.block_address => block }

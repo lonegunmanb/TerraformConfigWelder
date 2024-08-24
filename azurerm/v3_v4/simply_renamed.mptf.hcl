@@ -180,6 +180,13 @@ locals {
           replace_ref = true
         }
       ]
+      azurerm_redis_cache = [
+        {
+          from        = "redis_configuration.enable_authentication"
+          to          = "authentication_enabled"
+          replace_ref = true
+        }
+      ]
       } : [
       for rename in renames : {
         resource_type = resource_type

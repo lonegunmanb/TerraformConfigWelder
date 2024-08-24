@@ -6,6 +6,9 @@ locals {
     azurerm_machine_learning_datastore_datalake_gen2 = [
       "authority_url",
     ]
+    azurerm_network_interface = [
+      "dns_servers",
+    ]
   }
   oc_removed_arguments = flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if try(local.diffs[resource_type].oc_removed != null, false)])
   oc_removed_mptfs     = flatten([for _, blocks in local.oc_removed_arguments : [for b in blocks : b.mptf]])

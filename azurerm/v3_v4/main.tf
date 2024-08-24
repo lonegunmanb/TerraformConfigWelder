@@ -674,8 +674,38 @@ resource "azurerm_managed_application" "example" {
   application_definition_id   = azurerm_managed_application_definition.example.id
 
   parameters = {
-    location = "eastus"
+    location                 = "eastus"
     storageAccountNamePrefix = "storeNamePrefix"
-    storageAccountType = "Standard_LRS"
+    storageAccountType       = "Standard_LRS"
   }
+}
+
+resource "azurerm_monitor_action_group" "example" {
+  name                = "CriticalAlertsAction"
+  resource_group_name = azurerm_resource_group.example.name
+  short_name          = "p0action"
+
+  event_hub_receiver {
+    name                    = "sendtoeventhub"
+    event_hub_id            = var.azurerm_monitor_action_group_event_hub_receiver_event_hub_id
+    subscription_id         = "00000000-0000-0000-0000-000000000000"
+    use_common_alert_schema = false
+  }
+
+  dynamic "event_hub_receiver" {
+    for_each = var.event_hub_receiver == null ? [] : [var.event_hub_receiver]
+    content {
+      name                    = "sendtoeventhub"
+      event_hub_id            = event_hub_receiver.value.event_hub_id
+      subscription_id         = "00000000-0000-0000-0000-000000000000"
+      use_common_alert_schema = false
+    }
+  }
+}
+
+resource "azurerm_route_table" "example" {
+  location                      = "eastus"
+  name                          = "route_table"
+  resource_group_name           = "rg"
+  disable_bgp_route_propagation = var.azurerm_route_table_disable_bgp_route_propagation
 }
