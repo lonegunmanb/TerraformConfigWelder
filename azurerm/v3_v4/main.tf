@@ -760,3 +760,28 @@ locals {
   azurerm_sentinel_log_analytics_workspace_onboarding_count_workspace_name         = azurerm_sentinel_log_analytics_workspace_onboarding.count[0].workspace_name
   azurerm_sentinel_log_analytics_workspace_onboarding_for_each_resource_group_name = azurerm_sentinel_log_analytics_workspace_onboarding.for_each["a"].resource_group_name
 }
+
+resource "azurerm_storage_share_directory" "singleton" {
+  name                 = "example"
+  storage_account_name = var.azurerm_storage_share_directory_storage_account_name
+  share_name           = var.azurerm_storage_share_directory_share_name
+}
+
+resource "azurerm_storage_share_directory" "count" {
+  count                = var.azurerm_storage_share_directory_count
+  name                 = "example"
+  storage_account_name = var.azurerm_storage_share_directory_storage_account_name
+  share_name           = var.azurerm_storage_share_directory_share_name
+}
+
+resource "azurerm_storage_share_directory" "for_each" {
+  for_each             = var.azurerm_storage_share_directory_for_each
+  name                 = "example"
+  storage_account_name = var.azurerm_storage_share_directory_storage_account_name
+  share_name           = var.azurerm_storage_share_directory_share_name
+}
+
+locals {
+  azurerm_storage_share_directory_count_storage_name  = azurerm_storage_share_directory.count[0].storage_account_name
+  azurerm_storage_share_directory_for_each_share_name = azurerm_storage_share_directory.for_each["a"].share_name
+}

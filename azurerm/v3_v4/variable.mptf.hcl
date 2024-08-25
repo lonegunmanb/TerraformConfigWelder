@@ -97,3 +97,8 @@ variable "azurerm_sentinel_log_analytics_workspace_onboarding_toggle" {
   type    = bool
   default = true
 }
+
+variable "azurerm_storage_share_directory_toggle" {
+  type    = bool
+  default = true
+}

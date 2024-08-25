@@ -26,7 +26,7 @@ transform "new_block" sentinel_log_analytics_workspace_onboarding_with_workspace
   for_each       = var.azurerm_sentinel_log_analytics_workspace_onboarding_toggle ? local.sentinel_log_analytics_workspace_onboarding_with_workspace_name_and_resource_group_name_singleton : tomap({})
   new_block_type = "data"
   filename       = each.value.mptf.range.file_name
-  labels         = ["azurerm_log_analytics_workspace", each.value.mptf.block_labels[1]]
+  labels         = ["azurerm_log_analytics_workspace", "azurerm_sentinel_log_analytics_workspace_onboarding_${each.value.mptf.block_labels[1]}"]
   asstring {
     name                = each.value.workspace_name
     resource_group_name = each.value.resource_group_name
@@ -38,7 +38,7 @@ transform "update_in_place" sentinel_log_analytics_workspace_onboarding_with_wor
   for_each             = var.azurerm_sentinel_log_analytics_workspace_onboarding_toggle ? local.sentinel_log_analytics_workspace_onboarding_with_workspace_name_and_resource_group_name_singleton : tomap({})
   target_block_address = each.key
   asstring {
-    workspace_id = "data.azurerm_log_analytics_workspace.${each.value.mptf.block_labels[1]}.workspace_id"
+    workspace_id = "data.azurerm_log_analytics_workspace.azurerm_sentinel_log_analytics_workspace_onboarding_${each.value.mptf.block_labels[1]}.workspace_id"
   }
   depends_on = [
     transform.new_block.sentinel_log_analytics_workspace_onboarding_with_workspace_name_and_resource_group_name_singleton_data_source,
@@ -58,7 +58,7 @@ transform "new_block" sentinel_log_analytics_workspace_onboarding_with_workspace
   for_each       = var.azurerm_sentinel_log_analytics_workspace_onboarding_toggle ? local.sentinel_log_analytics_workspace_onboarding_with_workspace_name_and_resource_group_name_and_count : tomap({})
   new_block_type = "data"
   filename       = each.value.mptf.range.file_name
-  labels         = ["azurerm_log_analytics_workspace", each.value.mptf.block_labels[1]]
+  labels         = ["azurerm_log_analytics_workspace", "azurerm_sentinel_log_analytics_workspace_onboarding_${each.value.mptf.block_labels[1]}"]
   asstring {
     count               = each.value.count
     name                = each.value.workspace_name
@@ -72,7 +72,7 @@ transform "update_in_place" sentinel_log_analytics_workspace_onboarding_with_wor
   for_each             = var.azurerm_sentinel_log_analytics_workspace_onboarding_toggle ? local.sentinel_log_analytics_workspace_onboarding_with_workspace_name_and_resource_group_name_and_count : tomap({})
   target_block_address = each.key
   asstring {
-    workspace_id = "data.azurerm_log_analytics_workspace.${each.value.mptf.block_labels[1]}[count.index].workspace_id"
+    workspace_id = "data.azurerm_log_analytics_workspace.azurerm_sentinel_log_analytics_workspace_onboarding_${each.value.mptf.block_labels[1]}[count.index].workspace_id"
   }
   depends_on = [
     transform.new_block.sentinel_log_analytics_workspace_onboarding_with_workspace_name_and_resource_group_name_count_data_source,
@@ -92,7 +92,7 @@ transform "new_block" sentinel_log_analytics_workspace_onboarding_with_workspace
   for_each       = var.azurerm_sentinel_log_analytics_workspace_onboarding_toggle ? local.sentinel_log_analytics_workspace_onboarding_with_workspace_name_and_resource_group_name_and_for_each : tomap({})
   new_block_type = "data"
   filename       = each.value.mptf.range.file_name
-  labels         = ["azurerm_log_analytics_workspace", each.value.mptf.block_labels[1]]
+  labels         = ["azurerm_log_analytics_workspace", "azurerm_sentinel_log_analytics_workspace_onboarding_${each.value.mptf.block_labels[1]}"]
   asstring {
     for_each            = each.value.for_each
     name                = each.value.workspace_name
@@ -106,7 +106,7 @@ transform "update_in_place" sentinel_log_analytics_workspace_onboarding_with_wor
   for_each             = var.azurerm_sentinel_log_analytics_workspace_onboarding_toggle ? local.sentinel_log_analytics_workspace_onboarding_with_workspace_name_and_resource_group_name_and_for_each : tomap({})
   target_block_address = each.key
   asstring {
-    workspace_id = "data.azurerm_log_analytics_workspace.${each.value.mptf.block_labels[1]}[each.key].workspace_id"
+    workspace_id = "data.azurerm_log_analytics_workspace.azurerm_sentinel_log_analytics_workspace_onboarding_${each.value.mptf.block_labels[1]}[each.key].workspace_id"
   }
   depends_on = [
     transform.new_block.sentinel_log_analytics_workspace_onboarding_with_workspace_name_and_resource_group_name_for_each_data_source,
@@ -128,5 +128,5 @@ transform "regex_replace_expression" sentinel_log_analytics_workspace_onboarding
     "resource_group_name" : "resource_group_name",
   }) : tomap({})
   regex       = "azurerm_sentinel_log_analytics_workspace_onboarding\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?${each.key}"
-  replacement = "data.azurerm_log_analytics_workspace.$${1}$${2}$${3}$${4}$${5}${each.value}"
+  replacement = "data.azurerm_log_analytics_workspace.azurerm_sentinel_log_analytics_workspace_onboarding_$${1}$${2}$${3}$${4}$${5}${each.value}"
 }
