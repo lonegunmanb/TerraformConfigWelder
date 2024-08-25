@@ -43,7 +43,7 @@ mapotf reset
 If you'd like to run these tranforms against your own Terraform configuration files, you can use the following command:
 
 ```shell
-mapotf transform --tf-dir <your_terraform_config_folder> --mptf-dir git::https://github.com/lonegunmanb/TerraformConfigWelder//azurerm/v3_v4
+mapotf transform --tf-dir <your_terraform_config_folder> --mptf-dir git::https://github.com/lonegunmanb/TerraformConfigWelder.git//azurerm/v3_v4
 ```
 
 ## Unsupported Transforms
