@@ -102,3 +102,8 @@ variable "azurerm_storage_share_directory_toggle" {
   type    = bool
   default = true
 }
+
+variable "azurerm_storage_table_entity_toggle" {
+  type    = bool
+  default = true
+}

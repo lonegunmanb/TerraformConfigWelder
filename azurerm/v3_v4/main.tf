@@ -785,3 +785,44 @@ locals {
   azurerm_storage_share_directory_count_storage_name  = azurerm_storage_share_directory.count[0].storage_account_name
   azurerm_storage_share_directory_for_each_share_name = azurerm_storage_share_directory.for_each["a"].share_name
 }
+
+resource "azurerm_storage_table_entity" "singleton" {
+  table_name           = var.azurerm_storage_table_entity_storage_table_name
+  storage_account_name = var.azurerm_storage_table_entity_storage_account_name
+  partition_key        = "examplepartition"
+  row_key              = "examplerow"
+
+  entity = {
+    example = "example"
+  }
+}
+
+resource "azurerm_storage_table_entity" "count" {
+  count = var.azurerm_storage_table_entity_count
+
+  table_name           = var.azurerm_storage_table_entity_storage_table_name
+  storage_account_name = var.azurerm_storage_table_entity_storage_account_name
+  partition_key        = "examplepartition"
+  row_key              = "examplerow"
+
+  entity = {
+    example = "example"
+  }
+}
+
+resource "azurerm_storage_table_entity" "for_each" {
+  for_each             = var.azurerm_storage_table_entity_for_each
+  table_name           = var.azurerm_storage_table_entity_storage_table_name
+  storage_account_name = var.azurerm_storage_table_entity_storage_account_name
+  partition_key        = "examplepartition"
+  row_key              = "examplerow"
+
+  entity = {
+    example = "example"
+  }
+}
+
+locals {
+  azurerm_storage_table_entity_count_storage_name  = azurerm_storage_table_entity.count[0].storage_account_name
+  azurerm_storage_table_entity_for_each_table_name = azurerm_storage_table_entity.for_each["a"].table_name
+}
