@@ -826,3 +826,22 @@ locals {
   azurerm_storage_table_entity_count_storage_name  = azurerm_storage_table_entity.count[0].storage_account_name
   azurerm_storage_table_entity_for_each_table_name = azurerm_storage_table_entity.for_each["a"].table_name
 }
+
+resource "azurerm_vpn_gateway_nat_rule" "external_mapping" {
+  name                            = "example-vpngatewaynatrule"
+  vpn_gateway_id                  = azurerm_vpn_gateway.example.id
+  resource_group_name             = var.azurerm_vpn_gateway_nat_rule_resource_group_name
+  external_address_space_mappings = ["192.168.21.0/26"]
+}
+
+resource "azurerm_vpn_gateway_nat_rule" "internal_mapping" {
+  name                            = "example-vpngatewaynatrule"
+  vpn_gateway_id                  = azurerm_vpn_gateway.example.id
+  resource_group_name             = var.azurerm_vpn_gateway_nat_rule_resource_group_name
+  internal_address_space_mappings = ["192.168.21.0/26"]
+}
+
+locals {
+  azurerm_vpn_gateway_nat_rule_external_address_space_mappings = azurerm_vpn_gateway_nat_rule.external_mapping.external_address_space_mappings
+  azurerm_vpn_gateway_nat_rule_internal_address_space_mappings = azurerm_vpn_gateway_nat_rule.internal_mapping.internal_address_space_mappings
+}

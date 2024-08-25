@@ -107,3 +107,8 @@ variable "azurerm_storage_table_entity_toggle" {
   type    = bool
   default = true
 }
+
+variable "azurerm_vpn_gateway_nat_rule_toggle" {
+  type    = bool
+  default = true
+}

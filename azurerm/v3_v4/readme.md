@@ -50,6 +50,8 @@ mapotf transform --tf-dir <your_terraform_config_folder> --mptf-dir git::https:/
 
 All new default values introduced by `v4` won't be transformed.
 
+All new required properties introduced by `v4` won't be transformed.
+
 The following transforms are not supported in this version:
 
 * [`azurerm_image`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_image)
@@ -69,3 +71,5 @@ The following transforms are not supported in this version:
   - The deprecated block `recovery_group` has been removed in favour of the `shutdown_recovery_group`, `failover_recovery_group` and `boot_recovery_group` properties.
 * [`azurerm_sentinel_automation_rule`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_sentinel_automation_rule)
   - The deprecated property `condition` has been removed in favour of the `condition_json` property.
+* [`azurerm_virtual_network`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_virtual_network)
+  - The property `address_space` has been changed from a list to a set. If you're referencing an element in this property then this will require code changes.
