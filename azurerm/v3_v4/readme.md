@@ -52,6 +52,8 @@ All new default values introduced by `v4` won't be transformed.
 
 All new required properties introduced by `v4` won't be transformed.
 
+All `xxx and yyy must be set together` rules won't be processed.
+
 The following transforms are not supported in this version:
 
 * [`azurerm_image`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_image)
@@ -73,3 +75,5 @@ The following transforms are not supported in this version:
   - The deprecated property `condition` has been removed in favour of the `condition_json` property.
 * [`azurerm_virtual_network`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_virtual_network)
   - The property `address_space` has been changed from a list to a set. If you're referencing an element in this property then this will require code changes.
+* [`azurerm_web_application_firewall_policy`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_web_application_firewall_policy)
+  - The deprecated property `managed_rules.managed_rule_set.rule_group_override.disabled_rules` has been removed in favour of the `managed_rules.managed_rule_set.rule_group_override.rule` block.

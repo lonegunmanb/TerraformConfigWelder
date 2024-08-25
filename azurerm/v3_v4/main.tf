@@ -845,3 +845,41 @@ locals {
   azurerm_vpn_gateway_nat_rule_external_address_space_mappings = azurerm_vpn_gateway_nat_rule.external_mapping.external_address_space_mappings
   azurerm_vpn_gateway_nat_rule_internal_address_space_mappings = azurerm_vpn_gateway_nat_rule.internal_mapping.internal_address_space_mappings
 }
+
+resource "azurerm_windows_web_app" "example" {
+  name                = "example"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_service_plan.example.location
+  service_plan_id     = azurerm_service_plan.example.id
+
+  site_config {
+    auto_heal_setting {
+      trigger {
+        slow_request {
+          count      = 0
+          interval   = ""
+          time_taken = ""
+          path       = var.azurerm_windows_web_app_site_config_auto_heal_setting_trigger_slow_request_path
+        }
+      }
+    }
+  }
+}
+
+resource "azurerm_windows_web_app_slot" "example" {
+  name           = "example-slot"
+  app_service_id = azurerm_windows_web_app.example.id
+
+  site_config {
+    auto_heal_setting {
+      trigger {
+        slow_request {
+          count      = 0
+          interval   = ""
+          time_taken = ""
+          path       = var.azurerm_windows_web_app_slot_site_config_auto_heal_setting_trigger_slow_request_path
+        }
+      }
+    }
+  }
+}
