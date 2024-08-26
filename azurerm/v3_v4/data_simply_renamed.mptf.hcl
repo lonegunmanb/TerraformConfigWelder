@@ -45,6 +45,16 @@ locals {
           to   = "log_category_types"
         }
       ]
+      azurerm_network_interface = [
+        {
+          from = "enable_accelerated_networking"
+          to   = "accelerated_networking_enabled"
+        },
+        {
+          from = "enable_ip_forwarding"
+          to   = "ip_forwarding_enabled"
+        },
+      ]
       } : [
       for rename in renames : {
         data_source_type = data_source_type

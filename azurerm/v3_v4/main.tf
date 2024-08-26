@@ -923,3 +923,13 @@ data "azurerm_monitor_diagnostic_categories" "example" {
 locals {
   data_azurerm_monitor_diagnostic_logs = data.azurerm_monitor_diagnostic_categories.example.logs
 }
+
+data "azurerm_network_interface" "example" {
+  name                = "acctest-nic"
+  resource_group_name = "networking"
+}
+
+locals {
+  data_azurerm_network_interface_enable_accelerated_networking = data.azurerm_network_interface.example.enable_accelerated_networking
+  data_azurerm_network_interface_enable_ip_forwarding          = data.azurerm_network_interface.example.enable_ip_forwarding
+}
