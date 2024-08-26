@@ -18,6 +18,23 @@ locals {
           replace_ref = true
         },
       ]
+      azurerm_kubernetes_cluster = [
+        {
+          from        = "agent_pool_profile.enable_auto_scaling"
+          to          = "auto_scaling_enabled"
+          replace_ref = true
+        },
+        {
+          from        = "agent_pool_profile.enable_node_public_ip"
+          to          = "node_public_ip_enabled"
+          replace_ref = true
+        },
+        {
+          from        = "agent_pool_profile.enable_host_encryption"
+          to          = "host_encryption_enabled"
+          replace_ref = true
+        },
+      ]
       } : [
       for rename in renames : {
         data_source_type = data_source_type
@@ -53,23 +70,6 @@ locals {
     regex            = item_with_replacement.regex
     replacement      = "data.${item_with_replacement.data_source_type}.$${1}$${2}$${3}$${4}$${5}${join("", item_with_replacement.replacement)}${item_with_replacement.to}"
   }]
-}
-
-
-transform rename_block_element data_simply_renamed {
-  for_each = var.data_simply_renamed_toggle ? ["data_simply_renamed"] : []
-  dynamic "rename" {
-    for_each = local.data_simply_renamed
-    content {
-      resource_type               = "data.${rename.value.data_source_type}"
-      attribute_path              = split(".", rename.value.from)
-      new_name                    = rename.value.to
-      rename_only_new_name_absent = true
-    }
-  }
-  depends_on = [
-    transform.regex_replace_expression.data_simply_renamed,
-  ]
 }
 
 transform regex_replace_expression data_simply_renamed {
