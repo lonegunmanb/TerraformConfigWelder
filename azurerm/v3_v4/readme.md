@@ -48,6 +48,8 @@ mapotf transform --tf-dir <your_terraform_config_folder> --mptf-dir git::https:/
 
 ## Unsupported Transforms
 
+All removed resources, data sources won't be transformed.
+
 All new default values introduced by `v4` won't be transformed.
 
 All new required properties introduced by `v4` won't be transformed.
@@ -56,6 +58,8 @@ All `xxx and yyy must be set together` rules won't be processed.
 
 The following transforms are not supported in this version:
 
+* `azurerm_automation_software_update_configuration`
+  - The property `target.azure_query.tag_filter` is no longer Computed. If you experience a diff as a result of this change you may need to add this to ignore_changes.
 * [`azurerm_image`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_image)
   - A new required property `storage_type` has been added to the `os_disk` and `data_disk` blocks.
 * [`azurerm_monitor_action_group`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_monitor_action_group)
