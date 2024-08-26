@@ -128,3 +128,8 @@ variable "data_azurerm_cosmosdb_account_toggle" {
   type    = bool
   default = true
 }
+
+variable "data_azurerm_storage_share_directory_toggle" {
+  type    = bool
+  default = true
+}

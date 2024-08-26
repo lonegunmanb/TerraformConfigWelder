@@ -127,6 +127,10 @@ transform "regex_replace_expression" storage_table_entity_with_storage_account_n
     "table_name" : "name",
     "storage_account_name" : "storage_account_name",
   }) : tomap({})
-  regex       = "azurerm_storage_table_entity\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?${each.key}"
+  regex       = "(^|[^d]$|[^a]d$|[^t]da$|[^a]dat$|[^.]data$)azurerm_storage_table_entity\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?${each.key}"
   replacement = "data.azurerm_storage_table.azurerm_storage_table_entity_$${1}$${2}$${3}$${4}$${5}${each.value}"
+  depends_on = [
+    transform.regex_replace_expression.data_azurerm_storage_table_entity_storage_account_name,
+    transform.regex_replace_expression.data_azurerm_storage_table_entity_table_name,
+  ]
 }

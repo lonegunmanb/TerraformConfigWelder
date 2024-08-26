@@ -933,3 +933,14 @@ locals {
   data_azurerm_network_interface_enable_accelerated_networking = data.azurerm_network_interface.example.enable_accelerated_networking
   data_azurerm_network_interface_enable_ip_forwarding          = data.azurerm_network_interface.example.enable_ip_forwarding
 }
+
+data "azurerm_storage_table_entity" "example" {
+  storage_table_id = "https://example.table.core.windows.net/table1(PartitionKey='samplepartition',RowKey='samplerow')"
+  partition_key    = "example-partition-key"
+  row_key          = "example-row-key"
+}
+
+locals {
+  data_azurerm_storage_table_entity_storage_account_name = data.azurerm_storage_table_entity.example.storage_account_name
+  data_azurerm_storage_table_entity_table_name           = data.azurerm_storage_table_entity.example.table_name
+}

@@ -15,5 +15,4 @@ transform regex_replace_expression data_cosmosdb_account_connection_strings {
   for_each    = var.data_azurerm_cosmosdb_account_toggle ? ["cosmosdb_account_connection_strings"] : []
   regex       = "data.azurerm_cosmosdb_account\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?connection_strings"
   replacement = "compact([${local.data_cosmosdb_account_connection_strings_replacement}])"
-  #  depends_on  = [transform.rename_block_element.data_simply_renamed]
 }
