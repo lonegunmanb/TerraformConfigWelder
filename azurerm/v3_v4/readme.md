@@ -90,7 +90,7 @@ All new required properties introduced by `v4` won't be transformed.
 
 All `xxx and yyy must be set together` rules won't be processed.
 
-The following transforms on managed resources are not supported in this version:
+The following breaking changes on managed resources are not processed in this version:
 
 * `azurerm_automation_software_update_configuration`
   - The property `target.azure_query.tag_filter` is no longer Computed. If you experience a diff as a result of this change you may need to add this to ignore_changes.
@@ -115,3 +115,8 @@ The following transforms on managed resources are not supported in this version:
   - The property `address_space` has been changed from a list to a set. If you're referencing an element in this property then this will require code changes.
 * [`azurerm_web_application_firewall_policy`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_web_application_firewall_policy)
   - The deprecated property `managed_rules.managed_rule_set.rule_group_override.disabled_rules` has been removed in favour of the `managed_rules.managed_rule_set.rule_group_override.rule` block.
+
+The following breaking changes on data sources are not processed in this version:
+
+* [`azurerm_monitor_action_group`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_monitor_action_group-1)
+  - The deprecated property `event_hub_receiver.event_hub_id` has been removed in favour of the `event_hub_receiver.event_hub_name` and `event_hub_receiver.event_hub_namespace` properties.

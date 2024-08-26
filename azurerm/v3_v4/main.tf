@@ -904,3 +904,22 @@ locals {
   data_azurerm_kubernetes_cluster_agent_pool_profile_enable_node_public_ip  = data.azurerm_kubernetes_cluster.example.agent_pool_profile[0].enable_node_public_ip
   data_azurerm_kubernetes_cluster_agent_pool_profile_enable_host_encryption = data.azurerm_kubernetes_cluster.example.agent_pool_profile[0].enable_host_encryption
 }
+
+data "azurerm_kubernetes_cluster_node_pool" "example" {
+  name                    = "existing"
+  kubernetes_cluster_name = "existing-cluster"
+  resource_group_name     = "existing-resource-group"
+}
+
+locals {
+  data_azurerm_kubernetes_cluster_node_pool_enable_auto_scaling   = data.azurerm_kubernetes_cluster_node_pool.example.enable_auto_scaling
+  data_azurerm_kubernetes_cluster_node_pool_enable_node_public_ip = data.azurerm_kubernetes_cluster_node_pool.example.enable_node_public_ip
+}
+
+data "azurerm_monitor_diagnostic_categories" "example" {
+  resource_id = data.azurerm_key_vault.example.id
+}
+
+locals {
+  data_azurerm_monitor_diagnostic_logs = data.azurerm_monitor_diagnostic_categories.example.logs
+}

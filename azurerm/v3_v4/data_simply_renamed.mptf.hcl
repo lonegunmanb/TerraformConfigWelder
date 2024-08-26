@@ -3,44 +3,53 @@ locals {
     for data_source_type, renames in {
       azurerm_cosmosdb_account = [
         {
-          from        = "enable_multiple_write_locations"
-          to          = "multiple_write_locations_enabled"
-          replace_ref = true
+          from = "enable_multiple_write_locations"
+          to   = "multiple_write_locations_enabled"
         },
         {
-          from        = "enable_free_tier "
-          to          = "free_tier_enabled"
-          replace_ref = true
+          from = "enable_free_tier "
+          to   = "free_tier_enabled"
         },
         {
-          from        = "enable_automatic_failover"
-          to          = "automatic_failover_enabled"
-          replace_ref = true
+          from = "enable_automatic_failover"
+          to   = "automatic_failover_enabled"
         },
       ]
       azurerm_kubernetes_cluster = [
         {
-          from        = "agent_pool_profile.enable_auto_scaling"
-          to          = "auto_scaling_enabled"
-          replace_ref = true
+          from = "agent_pool_profile.enable_auto_scaling"
+          to   = "auto_scaling_enabled"
         },
         {
-          from        = "agent_pool_profile.enable_node_public_ip"
-          to          = "node_public_ip_enabled"
-          replace_ref = true
+          from = "agent_pool_profile.enable_node_public_ip"
+          to   = "node_public_ip_enabled"
         },
         {
-          from        = "agent_pool_profile.enable_host_encryption"
-          to          = "host_encryption_enabled"
-          replace_ref = true
+          from = "agent_pool_profile.enable_host_encryption"
+          to   = "host_encryption_enabled"
         },
+      ]
+      azurerm_kubernetes_cluster_node_pool = [
+        {
+          from = "enable_auto_scaling"
+          to   = "auto_scaling_enabled"
+        },
+        {
+          from = "enable_node_public_ip"
+          to   = "node_public_ip_enabled"
+        },
+      ]
+      azurerm_monitor_diagnostic_categories = [
+        {
+          from = "logs"
+          to   = "log_category_types"
+        }
       ]
       } : [
       for rename in renames : {
         data_source_type = data_source_type
         from             = rename.from
         to               = rename.to
-        replace_ref      = rename.replace_ref
       }
     ]
   ])
@@ -48,7 +57,7 @@ locals {
     data_source_type = rename.data_source_type
     paths            = split(".", rename.from)
     to               = rename.to
-    } if rename.replace_ref] : {
+    }] : {
     data_source_type = item.data_source_type
     paths            = item.paths
     to               = item.to
