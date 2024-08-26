@@ -23,6 +23,11 @@ variable "simply_renamed_toggle" {
   default = true
 }
 
+variable "data_simply_renamed_toggle" {
+  type    = bool
+  default = true
+}
+
 variable "azurerm_monitor_diagnostic_setting_toggle" {
   type    = bool
   default = true
@@ -115,6 +120,11 @@ variable "azurerm_storage_table_entity_toggle" {
 }
 
 variable "azurerm_vpn_gateway_nat_rule_toggle" {
+  type    = bool
+  default = true
+}
+
+variable "data_azurerm_cosmosdb_account_toggle" {
   type    = bool
   default = true
 }
