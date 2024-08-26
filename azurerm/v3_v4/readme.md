@@ -27,7 +27,7 @@ We've provided a set of demo Terraform `azurerm` resource blocks to demonstrate 
 Execute the following command to run the migration:
 
 ```shell
-mapotf transform -r --mptf-dir . --tf-dir .
+mapotf transform -r --mptf-dir git::https://github.com/lonegunmanb/TerraformConfigWelder.git//azurerm/v3_v4 --tf-dir .
 ```
 
 `mapotf transform` is the command to start the transformation process. `--mptf-dir` and `--tf-dir` are the directories where the Mapotf configuration files and Terraform configuration files are located, respectively.
@@ -40,11 +40,45 @@ Finally, you can always revert changes made by Mapotf by `reset` command:
 mapotf reset
 ```
 
-If you'd like to run these tranforms against your own Terraform configuration files, you can use the following command:
+If you'd like to run these transforms against your own Terraform configuration files, you can use the following command:
 
 ```shell
 mapotf transform --tf-dir <your_terraform_config_folder> --mptf-dir git::https://github.com/lonegunmanb/TerraformConfigWelder.git//azurerm/v3_v4
 ```
+
+## Transform categories
+
+These transforms are categorized into the following groups:
+
+* Attributes renamed from `enable_xxx` to `xxx_enabled`, defined in [`enable_to_enabled.mptf.hcl`](enable_to_enabled.mptf.hcl).
+* Simply renamed attributes and nested blocks, defined in [`simply_renamed.mptf.hcl`](simply_renamed.mptf.hcl).
+* Removed deprecated attributes and nested blocks, defined in [`attribute_removed.mptf.hcl`](attribute_removed.mptf.hcl).
+* Attributes that are no longer Computed, you might need to add them into `ignore_changes` list, defined in [`oc_removed.mptf.hcl`](oc_removed.mptf.hcl). (OC stands for Optional-Computed)
+* Special transforms to specified resources, defined in `azurerm_xxx_mptf.hcl` files.
+
+Not all breaking changes list in [4.0-upgrade-guide](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azure-provider-version-v40) could be transformed by `mapotf`. Please read [Unsupported Transforms](#Unsupported-Transforms) for more details.
+
+## Transform toggles
+
+You would see multiple `azurerm_xxx_toggle` variables in `variable.mptf.hcl` file. These variables are used to control the transformation process. You can set them to `true` or `false` to enable or disable the corresponding transform. For example:
+
+```hcl
+mapotf transform --tf-dir . --mptf-dir git::https://github.com/lonegunmanb/TerraformConfigWelder.git//azurerm/v3_v4 --mptf-var azurerm_linux_web_app_toggle=false
+```
+
+This would disable the transformation for `azurerm_linux_web_app` resource.
+
+**Notes:** These resource toggles doesn't work for transforms that remove deprecated attributes and nested blocks. If you'd like to skip these removal transforms, you can set `var.attribute_removed_toggle` to `false`.
+
+`var.oc_removed_toggle` controls the transforms that add attributes that removed `Computed` declaration to resource's `ignore_changes` list.
+
+`var.oc_removed_bypass_types` allows you to bypass adding oc-removed attributes into `ignore_changes` list for specific types.
+
+`var.simply_renamed_toggle` controls the transforms that rename attributes and nested blocks.
+
+`var.enable_to_enabled_toggle` controls the transforms that rename attributes from `enable_xxx` to `xxx_enabled`.
+
+`var.attribute_removed_toggle` controls the transforms that remove deprecated attributes and nested blocks.
 
 ## Unsupported Transforms
 
@@ -56,7 +90,7 @@ All new required properties introduced by `v4` won't be transformed.
 
 All `xxx and yyy must be set together` rules won't be processed.
 
-The following transforms are not supported in this version:
+The following transforms on managed resources are not supported in this version:
 
 * `azurerm_automation_software_update_configuration`
   - The property `target.azure_query.tag_filter` is no longer Computed. If you experience a diff as a result of this change you may need to add this to ignore_changes.

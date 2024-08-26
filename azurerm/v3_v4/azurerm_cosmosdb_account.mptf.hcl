@@ -12,7 +12,7 @@ locals {
 }
 
 transform regex_replace_expression cosmosdb_account_connection_strings {
-  for_each    = var.azurerm_cosmosdb_account ? ["cosmosdb_account_connection_strings"] : []
+  for_each    = var.azurerm_cosmosdb_account_toggle ? ["cosmosdb_account_connection_strings"] : []
   regex       = "azurerm_cosmosdb_account\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?connection_strings"
   replacement = "compact([${local.cosmosdb_account_connection_strings_replacement}])"
   depends_on  = [transform.rename_block_element.simply_renamed]

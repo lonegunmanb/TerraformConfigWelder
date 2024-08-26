@@ -1,9 +1,29 @@
+variable "oc_removed_bypass_types" {
+  type    = list(string)
+  default = []
+}
+
+variable "oc_removed_toggle" {
+  type    = bool
+  default = true
+}
+
+variable "attribute_removed_toggle" {
+  type    = bool
+  default = true
+}
+
+variable "enable_to_enabled_toggle" {
+  type    = bool
+  default = true
+}
+
 variable "simply_renamed_toggle" {
   type    = bool
   default = true
 }
 
-variable "monitor_diagnostic_setting_toggle" {
+variable "azurerm_monitor_diagnostic_setting_toggle" {
   type    = bool
   default = true
 }
@@ -18,22 +38,8 @@ variable "azurerm_bot_channel_web_chat_toggle" {
   default = true
 }
 
-variable "attribute_removed_toggle" {
-  type    = bool
-  default = true
-}
 
-variable "oc_removed_toggle" {
-  type    = bool
-  default = true
-}
-
-variable "key_vault_managed_hardware_security_module_role_assignment_toggle" {
-  type    = bool
-  default = true
-}
-
-variable "enable_to_enabled_toggle" {
+variable "azurerm_key_vault_managed_hardware_security_module_role_assignment_toggle" {
   type    = bool
   default = true
 }
@@ -58,7 +64,7 @@ variable "azurerm_container_registry_toggle" {
   default = true
 }
 
-variable "azurerm_cosmosdb_account" {
+variable "azurerm_cosmosdb_account_toggle" {
   type    = bool
   default = true
 }
@@ -78,7 +84,7 @@ variable "azurerm_managed_application_toggle" {
   default = true
 }
 
-variable "azurerm_monitor_action_group" {
+variable "azurerm_monitor_action_group_toggle" {
   type    = bool
   default = true
 }

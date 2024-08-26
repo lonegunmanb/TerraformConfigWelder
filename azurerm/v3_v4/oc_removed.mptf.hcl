@@ -18,12 +18,12 @@ locals {
       "target.azure_query.tag_filter",
     ]
   }
-  all_oc_removed_types = distinct(concat(keys({ for t, d in local.diffs : t => d if d.oc_removed != null }), keys(local.extra_oc_removed)))
-  oc_removed_items = { for t in local.all_oc_removed_types : t => setsubtract(distinct(concat(try(local.diffs[t].oc_removed, []), try(local.extra_oc_removed[t], []))), try(local.oc_removed_bypass_list[t], [])) }
+  all_oc_removed_types                          = [ for t in distinct(concat(keys({ for t, d in local.diffs : t => d if d.oc_removed != null }), keys(local.extra_oc_removed))) : t if !contains(var.oc_removed_bypass_types, t)]
+  oc_removed_items                              = { for t in local.all_oc_removed_types : t => setsubtract(distinct(concat(try(local.diffs[t].oc_removed, []), try(local.extra_oc_removed[t], []))), try(local.oc_removed_bypass_list[t], [])) }
   oc_removed_items_with_processed_nested_blocks = { for t, items in local.oc_removed_items : t => [for i in items : strcontains(i, ".") ? (join("[0].", split(".", i))) : i] }
-  oc_removed_arguments = flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if try(local.diffs[resource_type].oc_removed != null, false)])
-  oc_removed_mptfs     = flatten([for _, blocks in local.oc_removed_arguments : [for b in blocks : b.mptf]])
-  oc_removed_addresses = [for mptf in local.oc_removed_mptfs : mptf.block_address]
+  oc_removed_arguments                          = flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if contains(local.all_oc_removed_types, resource_type)])
+  oc_removed_mptfs                              = flatten([for _, blocks in local.oc_removed_arguments : [for b in blocks : b.mptf]])
+  oc_removed_addresses                          = [for mptf in local.oc_removed_mptfs : mptf.block_address]
 }
 
 transform "update_in_place" oc_removed {

@@ -6,7 +6,7 @@ locals {
 }
 
 transform remove_block_element monitor_diagnostic_setting {
-  for_each             = var.monitor_diagnostic_setting_toggle ? local.monitor_diagnostic_setting_resource_addresses : []
+  for_each             = var.azurerm_monitor_diagnostic_setting_toggle ? local.monitor_diagnostic_setting_resource_addresses : []
   target_block_address = each.value
   paths                = ["log.enabled"]
 }
