@@ -55,6 +55,12 @@ locals {
           to   = "ip_forwarding_enabled"
         },
       ]
+      azurerm_storage_account = [
+        {
+          from = "enable_https_traffic_only"
+          to   = "https_traffic_only_enabled"
+        }
+      ]
       } : [
       for rename in renames : {
         data_source_type = data_source_type

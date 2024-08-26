@@ -120,3 +120,5 @@ The following breaking changes on data sources are not processed in this version
 
 * [`azurerm_monitor_action_group`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_monitor_action_group-1)
   - The deprecated property `event_hub_receiver.event_hub_id` has been removed in favour of the `event_hub_receiver.event_hub_name` and `event_hub_receiver.event_hub_namespace` properties.
+* [`azurerm_storage_account_customer_managed_key`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_storage_account_customer_managed_key)
+  - The property `key_vault_id` no longer accepts Managed HSM keys, instead please use the `managed_hsm_key_id` property.
