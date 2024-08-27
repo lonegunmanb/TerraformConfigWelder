@@ -103,7 +103,7 @@ locals {
         },
         {
           from        = "default_node_pool.enable_auto_scaling"
-          to          = "default_node_pool.auto_scaling_enabled"
+          to          = "auto_scaling_enabled"
           replace_ref = true
         }
       ]
