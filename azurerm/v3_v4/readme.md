@@ -122,3 +122,35 @@ The following breaking changes on data sources are not processed in this version
   - The deprecated property `event_hub_receiver.event_hub_id` has been removed in favour of the `event_hub_receiver.event_hub_name` and `event_hub_receiver.event_hub_namespace` properties.
 * [`azurerm_storage_account_customer_managed_key`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_storage_account_customer_managed_key)
   - The property `key_vault_id` no longer accepts Managed HSM keys, instead please use the `managed_hsm_key_id` property.
+* [`azurerm_storage_share_directory`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_storage_share_directory-1)
+  - The deprecated properties `storage_account_name` and `share_name` have been removed in favour of the `storage_share_id` property.
+* [`azurerm_storage_table_entity`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_storage_table_entity-1)
+  - The deprecated properties `storage_account_name` and `table_name` have been removed in favour of the `storage_table_id` property.
+* [`azurerm_storage_table_entities`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_storage_table_entities)
+  - The deprecated properties `storage_account_name` and `table_name` have been removed in favour of the `storage_table_id` property.
+* [`azurerm_subnet`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_subnet-1)
+  - The deprecated property `private_endpoint_network_policies_enabled` has been removed in favour of the `private_endpoint_network_policies` property.
+  - The deprecated property `enforce_private_link_endpoint_network_policies` has been removed in favour of the `private_endpoint_network_policies` property.
+  - The deprecated property `enforce_private_link_service_network_policies` has been removed in favour of the `private_link_service_network_policies_enabled` property.
+* [`azurerm_servicebus_namespace_authorization_rule`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_servicebus_namespace_authorization_rule)
+  - The deprecated property `namespace_name` has been removed in favour of the `namespace_id` property.
+  - The deprecated property `resource_group_name` has been removed in favour of the `namespace_id` property.
+* [`azurerm_servicebus_namespace_disaster_recovery_config`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_servicebus_namespace_disaster_recovery_config)
+  - The deprecated property `namespace_name` has been removed in favour of the `namespace_id` property.
+  - The deprecated property `resource_group_name` has been removed in favour of the `namespace_id` property.
+* [`azurerm_servicebus_queue`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_servicebus_queue-1)
+  - The deprecated property `namespace_name` has been removed in favour of the `namespace_id` property.
+  - The deprecated property `resource_group_name` has been removed in favour of the `namespace_id` property.
+* [`azurerm_servicebus_subscription`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_servicebus_subscription-1)
+  - The deprecated property `namespace_name` has been removed in favour of the `topic_id` property.
+  - The deprecated property `resource_group_name` has been removed in favour of the `topic_id` property.
+  - The deprecated property `topic_name` has been removed in favour of the `topic_id` property.
+* [`azurerm_servicebus_topic`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_servicebus_topic-1)
+  - The deprecated property `namespace_name` has been removed in favour of the `namespace_id` property.
+  - The deprecated property `resource_group_name` has been removed in favour of the `namespace_id` property.
+* [`azurerm_servicebus_namespace`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_servicebus_namespace-1)
+  - The deprecated property `zone_redundant` has been removed.
+* [`azurerm_windows_web_app`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_windows_web_app-1)
+  - The property `site_config.application_stack.docker_container_registry` has been removed.
+  - The property `site_config.application_stack.docker_container_name` has been removed.
+  - The property `site_config.application_stack.docker_container_tag` has been removed.
