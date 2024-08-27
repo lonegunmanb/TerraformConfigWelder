@@ -1,5 +1,8 @@
 locals {
   attribute_removed_bypass = {
+    azurerm_api_management = toset([
+      "policy",
+    ])
     azurerm_cdn_endpoint_custom_domain = toset(
       ["user_managed_https.key_vault_certificate_id"]
     )
@@ -12,6 +15,11 @@ locals {
   auto_generated_attribute_removed     = flatten([for _, blocks in flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if try(local.diffs[resource_type].deleted != null, false)]) : [for b in blocks : b]])
   auto_generated_attribute_removed_map = { for block in local.auto_generated_attribute_removed : block.mptf.block_address => block }
   extra_attribute_removed = {
+    azurerm_automation_account = toset(
+      [
+        "encryption.key_source",
+      ]
+    )
     azurerm_container_app = toset([
       "ingress.custom_domain",
     ])

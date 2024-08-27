@@ -6,19 +6,19 @@ resource "azurerm_virtual_network" "this" {
 }
 
 resource "azurerm_servicebus_namespace" "example" {
-  name                = "tfex-servicebus-namespace"
   location            = azurerm_resource_group.example.location
+  name                = "tfex-servicebus-namespace"
   resource_group_name = azurerm_resource_group.example.name
   sku                 = "Standard"
-
   tags = {
     source = "terraform"
   }
 }
 
 resource "azurerm_automation_software_update_configuration" "example" {
-  name                  = "example"
   automation_account_id = azurerm_automation_account.example.id
+  name                  = "example"
+  duration              = "PT2H2M2S"
   operating_system      = "Linux"
 
   linux {
@@ -27,42 +27,21 @@ resource "azurerm_automation_software_update_configuration" "example" {
     included_packages       = ["vim"]
     reboot                  = "IfRequired"
   }
-
   pre_task {
-    source = azurerm_automation_runbook.example.name
     parameters = {
       COMPUTER_NAME = "Foo"
     }
-  }
-  duration = "PT2H2M2S"
-}
-
-resource "azurerm_analysis_services_server" "server" {
-  name                    = "analysisservicesserver"
-  location                = azurerm_resource_group.example.location
-  resource_group_name     = azurerm_resource_group.example.name
-  sku                     = "S0"
-  admin_users             = ["myuser@domain.tld"]
-  enable_power_bi_service = true
-
-  ipv4_firewall_rule {
-    name        = "myRule1"
-    range_start = "210.117.252.0"
-    range_end   = "210.117.252.255"
-  }
-
-  tags = {
-    abc = 123
+    source = azurerm_automation_runbook.example.name
   }
 }
 
 resource "azurerm_servicebus_topic" "example" {
-  count        = 1
-  name         = "tfex_servicebus_topic"
-  namespace_id = azurerm_servicebus_namespace.example.id
+  count = 1
 
-  enable_express            = true
+  name                      = "tfex_servicebus_topic"
+  namespace_id              = azurerm_servicebus_namespace.example.id
   enable_batched_operations = true
+  enable_express            = true
   enable_partitioning       = true
 }
 
@@ -79,121 +58,50 @@ output "topic_partitioning_enabled" {
 }
 
 resource "azurerm_kubernetes_cluster" "example" {
-  count                           = 1
-  name                            = "example-aks1"
+  count = 1
+
   location                        = azurerm_resource_group.example.location
+  name                            = "example-aks1"
   resource_group_name             = azurerm_resource_group.example.name
-  dns_prefix                      = "exampleaks1"
   api_server_authorized_ip_ranges = ["198.51.100.0/24"]
+  dns_prefix                      = "exampleaks1"
+  tags = {
+    Environment = "Production"
+  }
+
   default_node_pool {
     name       = "default"
-    node_count = 1
     vm_size    = "Standard_D2_v2"
+    node_count = 1
+
     linux_os_config {
       swap_file_size_mb = 100
     }
+  }
+  identity {
+    type = "SystemAssigned"
   }
   network_profile {
     network_plugin  = "azure"
     ebpf_data_plane = "azure"
   }
-  identity {
-    type = "SystemAssigned"
-  }
-  tags = {
-    Environment = "Production"
-  }
 }
 
 locals {
-  swap_file_size_mb = azurerm_kubernetes_cluster.example[0].default_node_pool[0].linux_os_config[0].swap_file_size_mb
   ebpf_data_plane   = one(azurerm_kubernetes_cluster.example[0].network_profile.*.ebpf_data_plane)
-}
-
-resource "azurerm_container_app_job" "example" {
-  name                         = "example-container-app-job"
-  location                     = azurerm_resource_group.example.location
-  resource_group_name          = azurerm_resource_group.example.name
-  container_app_environment_id = azurerm_container_app_environment.example.id
-
-  replica_timeout_in_seconds = 10
-  replica_retry_limit        = 10
-  registries {
-    username             = "myuser"
-    password_secret_name = "mypassword"
-  }
-  dynamic "secrets" {
-    for_each = var.secret_value == null ? [] : [var.secret_value]
-    content {
-      name  = "secret"
-      value = sensitive(secrets.value)
-    }
-  }
-  manual_trigger_config {
-    parallelism              = 4
-    replica_completion_count = 1
-  }
-
-  template {
-    container {
-      image = "repo/testcontainerAppsJob0:v1"
-      name  = "testcontainerappsjob0"
-      readiness_probe {
-        transport = "HTTP"
-        port      = 5000
-      }
-
-      liveness_probe {
-        transport = "HTTP"
-        port      = 5000
-        path      = "/health"
-
-        header {
-          name  = "Cache-Control"
-          value = "no-cache"
-        }
-
-        initial_delay           = 5
-        interval_seconds        = 20
-        timeout                 = 2
-        failure_count_threshold = 1
-      }
-      startup_probe {
-        transport = "TCP"
-        port      = 5000
-      }
-
-      cpu    = 0.5
-      memory = "1Gi"
-    }
-  }
+  swap_file_size_mb = azurerm_kubernetes_cluster.example[0].default_node_pool[0].linux_os_config[0].swap_file_size_mb
 }
 
 resource "azurerm_linux_virtual_machine_scale_set" "example" {
-  count               = 1
+  count = 1
+
+  admin_username      = "adminuser"
+  location            = azurerm_resource_group.example.location
   name                = "example-vmss"
   resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
   sku                 = "Standard_F2"
   instances           = 1
-  admin_username      = "adminuser"
-
-  admin_ssh_key {
-    username   = "adminuser"
-    public_key = local.first_public_key
-  }
-
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-jammy"
-    sku       = "22_04-lts"
-    version   = "latest"
-  }
-
-  os_disk {
-    storage_account_type = "Standard_LRS"
-    caching              = "ReadWrite"
-  }
+  scale_in_policy     = var.azurerm_linux_virtual_machine_scale_set_scale_in_policy
 
   network_interface {
     name    = "example"
@@ -205,8 +113,17 @@ resource "azurerm_linux_virtual_machine_scale_set" "example" {
       subnet_id = azurerm_subnet.internal.id
     }
   }
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+  admin_ssh_key {
+    public_key = local.first_public_key
+    username   = "adminuser"
+  }
   dynamic "gallery_applications" {
     for_each = var.gallery_applications == null ? [] : [var.gallery_applications]
+
     content {
       package_reference_id             = gallery_applications.value.package_reference_id
       configuration_reference_blob_uri = gallery_applications.value.configuration_reference_blob_uri
@@ -214,48 +131,58 @@ resource "azurerm_linux_virtual_machine_scale_set" "example" {
       tag                              = gallery_applications.value.tag
     }
   }
-  scale_in_policy = var.azurerm_linux_virtual_machine_scale_set_scale_in_policy
+  source_image_reference {
+    offer     = "0001-com-ubuntu-server-jammy"
+    publisher = "Canonical"
+    sku       = "22_04-lts"
+    version   = "latest"
+  }
 }
 
 locals {
-  gallery_applications_package_reference_id               = azurerm_linux_virtual_machine_scale_set.example[0].gallery_applications[0].package_reference_id
-  gallery_applications_configuration_reference_blob_uri   = azurerm_linux_virtual_machine_scale_set.example[0].gallery_applications[0].configuration_reference_blob_uri
   azurerm_linux_virtual_machine_scale_set_scale_in_policy = azurerm_linux_virtual_machine_scale_set.example[0].scale_in_policy
+  gallery_applications_configuration_reference_blob_uri   = azurerm_linux_virtual_machine_scale_set.example[0].gallery_applications[0].configuration_reference_blob_uri
+  gallery_applications_package_reference_id               = azurerm_linux_virtual_machine_scale_set.example[0].gallery_applications[0].package_reference_id
 }
 
 resource "azurerm_monitor_aad_diagnostic_setting" "example" {
   name               = "setting1"
   storage_account_id = azurerm_storage_account.example.id
+
   log {
-    enabled  = true
     category = "SignInLogs"
+    enabled  = true
+
     retention_policy {
-      enabled = true
       days    = 1
+      enabled = true
     }
   }
   log {
-    enabled  = true
     category = "AuditLogs"
+    enabled  = true
+
     retention_policy {
-      enabled = true
       days    = 1
+      enabled = true
     }
   }
   log {
-    enabled  = true
     category = "NonInteractiveUserSignInLogs"
+    enabled  = true
+
     retention_policy {
-      enabled = true
       days    = 1
+      enabled = true
     }
   }
   log {
-    enabled  = true
     category = "ServicePrincipalSignInLogs"
+    enabled  = true
+
     retention_policy {
-      enabled = true
       days    = 1
+      enabled = true
     }
   }
 }
@@ -268,11 +195,11 @@ resource "azurerm_monitor_diagnostic_setting" "example" {
   log {
     category = "AuditEvent"
     enabled  = false
+
     retention_policy {
       enabled = false
     }
   }
-
   metric {
     category = "AllMetrics"
 
@@ -306,14 +233,15 @@ provider "azurerm" {
 }
 
 resource "azurerm_subnet" "example" {
+  address_prefixes                               = ["10.0.1.0/24"]
   name                                           = "example-subnet"
   resource_group_name                            = azurerm_resource_group.example.name
   virtual_network_name                           = azurerm_virtual_network.example.name
-  address_prefixes                               = ["10.0.1.0/24"]
   enforce_private_link_endpoint_network_policies = var.subnet_enforce_private_link_endpoint_network_policies
   enforce_private_link_service_network_policies  = var.enforce_private_link_service_network_policies
   private_endpoint_network_policies_enabled      = var.private_endpoint_network_policies_enabled
   private_link_service_network_policies_enabled  = var.private_link_service_network_policies_enabled
+
   delegation {
     name = "delegation"
 
@@ -324,156 +252,83 @@ resource "azurerm_subnet" "example" {
   }
 }
 
-resource "azurerm_api_management_api" "example" {
-  name                = "example-api"
-  resource_group_name = azurerm_resource_group.example.name
-  api_management_name = azurerm_api_management.example.name
-  revision            = "1"
-  display_name        = "Example API"
-  path                = "example"
-  protocols           = ["https"]
-  soap_pass_through   = var.soap_pass_through
-
-  import {
-    content_format = "swagger-link-json"
-    content_value  = "http://conferenceapi.azurewebsites.net/?format=json"
-  }
-}
-
 resource "azurerm_key_vault_managed_hardware_security_module_role_assignment" "with_count" {
-  count              = 1
+  count = 1
+
   name               = "a9dbe818-56e7-5878-c0ce-a1477692c1d6"
-  vault_base_url     = count.index == 1 ? var.key_vault_managed_hardware_security_module_role_assignment_vault_base_url : ""
-  scope              = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.scope
-  role_definition_id = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.resource_id
   principal_id       = data.azurerm_client_config.current.object_id
+  role_definition_id = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.resource_id
+  scope              = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.scope
+  vault_base_url     = count.index == 1 ? var.key_vault_managed_hardware_security_module_role_assignment_vault_base_url : ""
 }
 
 resource "azurerm_key_vault_managed_hardware_security_module_role_assignment" "with_for_each" {
-  for_each           = [1]
+  for_each = [1]
+
   name               = "a9dbe818-56e7-5878-c0ce-a1477692c1d6"
-  vault_base_url     = each.value == 1 ? var.key_vault_managed_hardware_security_module_role_assignment_vault_base_url : ""
-  scope              = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.scope
-  role_definition_id = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.resource_id
   principal_id       = data.azurerm_client_config.current.object_id
+  role_definition_id = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.resource_id
+  scope              = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.scope
+  vault_base_url     = each.value == 1 ? var.key_vault_managed_hardware_security_module_role_assignment_vault_base_url : ""
 }
 
 resource "azurerm_key_vault_managed_hardware_security_module_role_assignment" "this" {
+  provider = azurerm.alternate
+
   name               = "a9dbe818-56e7-5878-c0ce-a1477692c1d6"
-  vault_base_url     = var.key_vault_managed_hardware_security_module_role_assignment_vault_base_url
-  scope              = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.scope
-  role_definition_id = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.resource_id
   principal_id       = data.azurerm_client_config.current.object_id
-  provider           = azurerm.alternate
-}
-
-resource "azurerm_automation_software_update_configuration" "linux_example" {
-  name                  = "example"
-  automation_account_id = azurerm_automation_account.example.id
-  operating_system      = "Linux"
-
-  linux {
-    classification_included = "Security"
-    excluded_packages       = ["apt"]
-    included_packages       = ["vim"]
-    reboot                  = "IfRequired"
-  }
-
-  pre_task {
-    source = azurerm_automation_runbook.example.name
-    parameters = {
-      COMPUTER_NAME = "Foo"
-    }
-  }
-
-  duration = "PT2H2M2S"
-}
-
-resource "azurerm_automation_software_update_configuration" "windowsexample" {
-  name                  = "example"
-  automation_account_id = azurerm_automation_account.example.id
-  operating_system      = "Linux"
-
-  windows {
-    classification_included = "${var.windows_update_configuration_classification},Critical"
-    reboot                  = "IfRequired"
-  }
-
-  pre_task {
-    source = azurerm_automation_runbook.example.name
-    parameters = {
-      COMPUTER_NAME = "Foo"
-    }
-  }
-
-  duration = "PT2H2M2S"
-}
-
-resource "azurerm_bot_channel_web_chat" "example" {
-  bot_name            = azurerm_bot_channels_registration.example.name
-  location            = azurerm_bot_channels_registration.example.location
-  resource_group_name = azurerm_resource_group.example.name
-
-  site_names = ["example", "example2"]
-}
-
-resource "azurerm_cdn_endpoint_custom_domain" "example" {
-  name            = "example-domain"
-  cdn_endpoint_id = azurerm_cdn_endpoint.example.id
-  host_name       = "${azurerm_dns_cname_record.example.name}.${data.azurerm_dns_zone.example.name}"
-  user_managed_https {
-    key_vault_certificate_id = var.azurerm_cdn_endpoint_custom_domain_key_vault_certificate_id
-  }
+  role_definition_id = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.resource_id
+  scope              = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.scope
+  vault_base_url     = var.key_vault_managed_hardware_security_module_role_assignment_vault_base_url
 }
 
 resource "azurerm_container_group" "example" {
-  name                = "example-continst"
   location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-  ip_address_type     = "Public"
-  dns_name_label      = "aci-label"
+  name                = "example-continst"
   os_type             = "Linux"
+  resource_group_name = azurerm_resource_group.example.name
+  dns_name_label      = "aci-label"
+  ip_address_type     = "Public"
   network_profile_id  = var.azurerm_container_group_network_profile_id
+  tags = {
+    environment = "testing"
+  }
 
   container {
-    name   = "hello-world"
-    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
     cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
     memory = "1.5"
+    name   = "hello-world"
 
     ports {
       port     = 443
       protocol = "TCP"
     }
   }
-
   container {
-    name   = "sidecar"
-    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
     cpu    = "0.5"
+    image  = "mcr.microsoft.com/azuredocs/aci-tutorial-sidecar"
     memory = "1.5"
-  }
-
-  tags = {
-    environment = "testing"
+    name   = "sidecar"
   }
 }
 
 resource "azurerm_container_registry" "acr" {
+  location            = azurerm_resource_group.example.location
   name                = "containerRegistry1"
   resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
   sku                 = "Premium"
   admin_enabled       = false
+
   georeplications {
     location                = "East US"
-    zone_redundancy_enabled = true
     tags                    = {}
+    zone_redundancy_enabled = true
   }
   georeplications {
     location                = "North Europe"
-    zone_redundancy_enabled = true
     tags                    = {}
+    zone_redundancy_enabled = true
   }
   retention_policy {
     days = var.azurerm_container_registry_rention_in_days
@@ -481,20 +336,21 @@ resource "azurerm_container_registry" "acr" {
 }
 
 resource "azurerm_container_registry" "acr" {
+  location            = azurerm_resource_group.example.location
   name                = "containerRegistry1"
   resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
   sku                 = "Premium"
   admin_enabled       = false
+
   georeplications {
     location                = "East US"
-    zone_redundancy_enabled = true
     tags                    = {}
+    zone_redundancy_enabled = true
   }
   georeplications {
     location                = "North Europe"
-    zone_redundancy_enabled = true
     tags                    = {}
+    zone_redundancy_enabled = true
   }
   retention_policy {
     days = var.azurerm_container_registry_rention_in_days
@@ -510,46 +366,40 @@ locals {
 }
 
 resource "azurerm_cosmosdb_account" "db" {
-  count               = 0
-  name                = "tfex-cosmos-db-${random_integer.ri.result}"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-  offer_type          = "Standard"
-  kind                = "MongoDB"
+  count = 0
 
+  location                        = azurerm_resource_group.example.location
+  name                            = "tfex-cosmos-db-${random_integer.ri.result}"
+  offer_type                      = "Standard"
+  resource_group_name             = azurerm_resource_group.example.name
   automatic_failover_enabled      = true
   enable_multiple_write_locations = var.azurerm_cosmosdb_account_enable_multiple_write_locations
-
-  capabilities {
-    name = "EnableAggregationPipeline"
-  }
-
-  capabilities {
-    name = "mongoEnableDocLevelTTL"
-  }
-
-  capabilities {
-    name = "MongoDBv3.4"
-  }
-
-  capabilities {
-    name = "EnableMongo"
-  }
+  kind                            = "MongoDB"
 
   consistency_policy {
     consistency_level       = "BoundedStaleness"
     max_interval_in_seconds = 300
     max_staleness_prefix    = 100000
   }
-
   geo_location {
-    location          = "eastus"
     failover_priority = 1
+    location          = "eastus"
   }
-
   geo_location {
-    location          = "westus"
     failover_priority = 0
+    location          = "westus"
+  }
+  capabilities {
+    name = "EnableAggregationPipeline"
+  }
+  capabilities {
+    name = "mongoEnableDocLevelTTL"
+  }
+  capabilities {
+    name = "MongoDBv3.4"
+  }
+  capabilities {
+    name = "EnableMongo"
   }
 }
 
@@ -559,10 +409,10 @@ locals {
 }
 
 resource "azurerm_cosmosdb_sql_container" "example" {
-  name                  = "example-container"
-  resource_group_name   = data.azurerm_cosmosdb_account.example.resource_group_name
   account_name          = data.azurerm_cosmosdb_account.example.name
   database_name         = azurerm_cosmosdb_sql_database.example.name
+  name                  = "example-container"
+  resource_group_name   = data.azurerm_cosmosdb_account.example.resource_group_name
   partition_key_path    = "/definition/id"
   partition_key_version = 1
   throughput            = 400
@@ -570,51 +420,46 @@ resource "azurerm_cosmosdb_sql_container" "example" {
   indexing_policy {
     indexing_mode = "consistent"
 
-    included_path {
-      path = "/*"
-    }
-
-    included_path {
-      path = "/included/?"
-    }
-
     excluded_path {
       path = "/excluded/?"
     }
+    included_path {
+      path = "/*"
+    }
+    included_path {
+      path = "/included/?"
+    }
   }
-
   unique_key {
     paths = ["/definition/idlong", "/definition/idshort"]
   }
 }
 
 resource "azurerm_databricks_workspace" "example" {
+  location                              = azurerm_resource_group.example.location
   name                                  = "databricks-test"
   resource_group_name                   = azurerm_resource_group.example.name
-  location                              = azurerm_resource_group.example.location
   sku                                   = "standard"
   network_security_group_rules_required = "AllRules"
-
   tags = {
     Environment = "Production"
   }
 }
 
 resource "azurerm_dev_test_lab" "example" {
-  name                = "example-devtestlab"
   location            = azurerm_resource_group.example.location
+  name                = "example-devtestlab"
   resource_group_name = azurerm_resource_group.example.name
   storage_type        = "Premium"
-
   tags = {
     "Sydney" = "Australia"
   }
 }
 
 resource "azurerm_linux_web_app" "example" {
+  location            = azurerm_service_plan.example.location
   name                = "example"
   resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_service_plan.example.location
   service_plan_id     = azurerm_service_plan.example.id
 
   #   site_config {
@@ -631,6 +476,7 @@ resource "azurerm_linux_web_app" "example" {
   #   }
   dynamic "site_config" {
     for_each = [1]
+
     content {
       auto_heal_setting {
         trigger {
@@ -647,12 +493,13 @@ resource "azurerm_linux_web_app" "example" {
 }
 
 resource "azurerm_machine_learning_workspace" "example" {
-  count                                        = 1
-  name                                         = "example-workspace"
-  location                                     = azurerm_resource_group.example.location
-  resource_group_name                          = azurerm_resource_group.example.name
+  count = 1
+
   application_insights_id                      = azurerm_application_insights.example.id
   key_vault_id                                 = azurerm_key_vault.example.id
+  location                                     = azurerm_resource_group.example.location
+  name                                         = "example-workspace"
+  resource_group_name                          = azurerm_resource_group.example.name
   storage_account_id                           = azurerm_storage_account.example.id
   public_access_behind_virtual_network_enabled = var.azurerm_machine_learning_workspace_public_access_behind_virtual_network_enabled
 
@@ -666,13 +513,12 @@ locals {
 }
 
 resource "azurerm_managed_application" "example" {
-  name                        = "example-managedapplication"
-  location                    = azurerm_resource_group.example.location
-  resource_group_name         = azurerm_resource_group.example.name
   kind                        = "ServiceCatalog"
+  location                    = azurerm_resource_group.example.location
   managed_resource_group_name = "infrastructureGroup"
+  name                        = "example-managedapplication"
+  resource_group_name         = azurerm_resource_group.example.name
   application_definition_id   = azurerm_managed_application_definition.example.id
-
   parameters = {
     location                 = "eastus"
     storageAccountNamePrefix = "storeNamePrefix"
@@ -691,9 +537,9 @@ resource "azurerm_monitor_action_group" "example" {
     subscription_id         = "00000000-0000-0000-0000-000000000000"
     use_common_alert_schema = false
   }
-
   dynamic "event_hub_receiver" {
     for_each = var.event_hub_receiver == null ? [] : [var.event_hub_receiver]
+
     content {
       name                    = "sendtoeventhub"
       event_hub_id            = event_hub_receiver.value.event_hub_id
@@ -711,49 +557,52 @@ resource "azurerm_route_table" "example" {
 }
 
 resource "azurerm_sentinel_alert_rule_scheduled" "example" {
-  name                       = "example"
-  log_analytics_workspace_id = azurerm_sentinel_log_analytics_workspace_onboarding.example.workspace_id
   display_name               = "example"
-  severity                   = "High"
+  log_analytics_workspace_id = azurerm_sentinel_log_analytics_workspace_onboarding.example.workspace_id
+  name                       = "example"
   query                      = <<QUERY
 AzureActivity |
   where OperationName == "Create or Update Virtual Machine" or OperationName =="Create Deployment" |
   where ActivityStatus == "Succeeded" |
   make-series dcount(ResourceId) default=0 on EventSubmissionTimestamp in range(ago(7d), now(), 1d) by Caller
 QUERY
+  severity                   = "High"
+
   incident_configuration {
     create_incident         = var.azurerm_sentinel_alert_rule_scheduled_incident_configuration_create_incident
-    group_by_entities       = var.azurerm_sentinel_alert_rule_scheduled_incident_configuration_group_by_entities
     group_by_alert_details  = var.azurerm_sentinel_alert_rule_scheduled_incident_configuration_group_by_alert_details
     group_by_custom_details = var.azurerm_sentinel_alert_rule_scheduled_incident_configuration_group_by_custom_details
+    group_by_entities       = var.azurerm_sentinel_alert_rule_scheduled_incident_configuration_group_by_entities
   }
 }
 
 locals {
   azurerm_sentinel_alert_rule_scheduled_incident_configuration_create_incident         = azurerm_sentinel_alert_rule_scheduled.example.incident_configuration[0].create_incident
-  azurerm_sentinel_alert_rule_scheduled_incident_configuration_group_by_entities       = azurerm_sentinel_alert_rule_scheduled.example.incident_configuration[0].group_by_entities
   azurerm_sentinel_alert_rule_scheduled_incident_configuration_group_by_alert_details  = azurerm_sentinel_alert_rule_scheduled.example.incident_configuration[0].group_by_alert_details
   azurerm_sentinel_alert_rule_scheduled_incident_configuration_group_by_custom_details = azurerm_sentinel_alert_rule_scheduled.example.incident_configuration[0].group_by_custom_details
+  azurerm_sentinel_alert_rule_scheduled_incident_configuration_group_by_entities       = azurerm_sentinel_alert_rule_scheduled.example.incident_configuration[0].group_by_entities
 }
 
 resource "azurerm_sentinel_log_analytics_workspace_onboarding" "singleton" {
-  workspace_name               = var.azurerm_sentinel_log_analytics_workspace_onboarding_workspace_name
-  resource_group_name          = var.azurerm_sentinel_log_analytics_workspace_onboarding_resource_group_name
   customer_managed_key_enabled = false
+  resource_group_name          = var.azurerm_sentinel_log_analytics_workspace_onboarding_resource_group_name
+  workspace_name               = var.azurerm_sentinel_log_analytics_workspace_onboarding_workspace_name
 }
 
 resource "azurerm_sentinel_log_analytics_workspace_onboarding" "count" {
-  count                        = var.azurerm_sentinel_log_analytics_workspace_onboarding_count
-  workspace_name               = local.azurerm_sentinel_log_analytics_workspace_onboarding_count_names[count.index]
-  resource_group_name          = local.azurerm_sentinel_log_analytics_workspace_onboarding_count_rg_names[count.index]
+  count = var.azurerm_sentinel_log_analytics_workspace_onboarding_count
+
   customer_managed_key_enabled = false
+  resource_group_name          = local.azurerm_sentinel_log_analytics_workspace_onboarding_count_rg_names[count.index]
+  workspace_name               = local.azurerm_sentinel_log_analytics_workspace_onboarding_count_names[count.index]
 }
 
 resource "azurerm_sentinel_log_analytics_workspace_onboarding" "for_each" {
-  for_each                     = var.azurerm_sentinel_log_analytics_workspace_onboarding_for_each
-  workspace_name               = each.value
-  resource_group_name          = each.value
+  for_each = var.azurerm_sentinel_log_analytics_workspace_onboarding_for_each
+
   customer_managed_key_enabled = false
+  resource_group_name          = each.value
+  workspace_name               = each.value
 }
 
 locals {
@@ -763,22 +612,24 @@ locals {
 
 resource "azurerm_storage_share_directory" "singleton" {
   name                 = "example"
-  storage_account_name = var.azurerm_storage_share_directory_storage_account_name
   share_name           = var.azurerm_storage_share_directory_share_name
+  storage_account_name = var.azurerm_storage_share_directory_storage_account_name
 }
 
 resource "azurerm_storage_share_directory" "count" {
-  count                = var.azurerm_storage_share_directory_count
+  count = var.azurerm_storage_share_directory_count
+
   name                 = "example"
-  storage_account_name = var.azurerm_storage_share_directory_storage_account_name
   share_name           = var.azurerm_storage_share_directory_share_name
+  storage_account_name = var.azurerm_storage_share_directory_storage_account_name
 }
 
 resource "azurerm_storage_share_directory" "for_each" {
-  for_each             = var.azurerm_storage_share_directory_for_each
+  for_each = var.azurerm_storage_share_directory_for_each
+
   name                 = "example"
-  storage_account_name = var.azurerm_storage_share_directory_storage_account_name
   share_name           = var.azurerm_storage_share_directory_share_name
+  storage_account_name = var.azurerm_storage_share_directory_storage_account_name
 }
 
 locals {
@@ -787,39 +638,37 @@ locals {
 }
 
 resource "azurerm_storage_table_entity" "singleton" {
-  table_name           = var.azurerm_storage_table_entity_storage_table_name
-  storage_account_name = var.azurerm_storage_table_entity_storage_account_name
-  partition_key        = "examplepartition"
-  row_key              = "examplerow"
-
   entity = {
     example = "example"
   }
+  partition_key        = "examplepartition"
+  row_key              = "examplerow"
+  storage_account_name = var.azurerm_storage_table_entity_storage_account_name
+  table_name           = var.azurerm_storage_table_entity_storage_table_name
 }
 
 resource "azurerm_storage_table_entity" "count" {
   count = var.azurerm_storage_table_entity_count
 
-  table_name           = var.azurerm_storage_table_entity_storage_table_name
-  storage_account_name = var.azurerm_storage_table_entity_storage_account_name
-  partition_key        = "examplepartition"
-  row_key              = "examplerow"
-
   entity = {
     example = "example"
   }
+  partition_key        = "examplepartition"
+  row_key              = "examplerow"
+  storage_account_name = var.azurerm_storage_table_entity_storage_account_name
+  table_name           = var.azurerm_storage_table_entity_storage_table_name
 }
 
 resource "azurerm_storage_table_entity" "for_each" {
-  for_each             = var.azurerm_storage_table_entity_for_each
-  table_name           = var.azurerm_storage_table_entity_storage_table_name
-  storage_account_name = var.azurerm_storage_table_entity_storage_account_name
-  partition_key        = "examplepartition"
-  row_key              = "examplerow"
+  for_each = var.azurerm_storage_table_entity_for_each
 
   entity = {
     example = "example"
   }
+  partition_key        = "examplepartition"
+  row_key              = "examplerow"
+  storage_account_name = var.azurerm_storage_table_entity_storage_account_name
+  table_name           = var.azurerm_storage_table_entity_storage_table_name
 }
 
 locals {
@@ -829,15 +678,15 @@ locals {
 
 resource "azurerm_vpn_gateway_nat_rule" "external_mapping" {
   name                            = "example-vpngatewaynatrule"
-  vpn_gateway_id                  = azurerm_vpn_gateway.example.id
   resource_group_name             = var.azurerm_vpn_gateway_nat_rule_resource_group_name
+  vpn_gateway_id                  = azurerm_vpn_gateway.example.id
   external_address_space_mappings = ["192.168.21.0/26"]
 }
 
 resource "azurerm_vpn_gateway_nat_rule" "internal_mapping" {
   name                            = "example-vpngatewaynatrule"
-  vpn_gateway_id                  = azurerm_vpn_gateway.example.id
   resource_group_name             = var.azurerm_vpn_gateway_nat_rule_resource_group_name
+  vpn_gateway_id                  = azurerm_vpn_gateway.example.id
   internal_address_space_mappings = ["192.168.21.0/26"]
 }
 
@@ -847,9 +696,9 @@ locals {
 }
 
 resource "azurerm_windows_web_app" "example" {
+  location            = azurerm_service_plan.example.location
   name                = "example"
   resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_service_plan.example.location
   service_plan_id     = azurerm_service_plan.example.id
 
   site_config {
@@ -867,8 +716,8 @@ resource "azurerm_windows_web_app" "example" {
 }
 
 resource "azurerm_windows_web_app_slot" "example" {
-  name           = "example-slot"
   app_service_id = azurerm_windows_web_app.example.id
+  name           = "example-slot"
 
   site_config {
     auto_heal_setting {
@@ -901,13 +750,13 @@ data "azurerm_kubernetes_cluster" "example" {
 
 locals {
   data_azurerm_kubernetes_cluster_agent_pool_profile_enable_auto_scaling    = data.azurerm_kubernetes_cluster.example.agent_pool_profile[0].enable_auto_scaling
-  data_azurerm_kubernetes_cluster_agent_pool_profile_enable_node_public_ip  = data.azurerm_kubernetes_cluster.example.agent_pool_profile[0].enable_node_public_ip
   data_azurerm_kubernetes_cluster_agent_pool_profile_enable_host_encryption = data.azurerm_kubernetes_cluster.example.agent_pool_profile[0].enable_host_encryption
+  data_azurerm_kubernetes_cluster_agent_pool_profile_enable_node_public_ip  = data.azurerm_kubernetes_cluster.example.agent_pool_profile[0].enable_node_public_ip
 }
 
 data "azurerm_kubernetes_cluster_node_pool" "example" {
-  name                    = "existing"
   kubernetes_cluster_name = "existing-cluster"
+  name                    = "existing"
   resource_group_name     = "existing-resource-group"
 }
 
@@ -935,9 +784,9 @@ locals {
 }
 
 data "azurerm_storage_table_entity" "example" {
-  storage_table_id = "https://example.table.core.windows.net/table1(PartitionKey='samplepartition',RowKey='samplerow')"
   partition_key    = "example-partition-key"
   row_key          = "example-row-key"
+  storage_table_id = "https://example.table.core.windows.net/table1(PartitionKey='samplepartition',RowKey='samplerow')"
 }
 
 locals {

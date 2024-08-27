@@ -1,10 +1,10 @@
-# TerraformJumper
+# TerraformConfigWelder
 
-TerraformJumper is an experimental tool designed to assist Terraform users in managing major version upgrades for a given Terraform provider. These upgrades often introduce breaking changes that require significant modifications to Terraform configurations. While providers may include schema migration mechanisms to handle Terraform State, Pusu helps by modifying the Terraform configuration files directly, following the upgrade guide.
+TerraformConfigWelder is an experimental tool designed to assist Terraform users in managing major version upgrades for a given Terraform provider. These upgrades often introduce breaking changes that require significant modifications to Terraform configurations. While providers may include schema migration mechanisms to handle Terraform State, Pusu helps by modifying the Terraform configuration files directly, following the upgrade guide.
 
 ## Overview
 
-TerraformJumper leverages [Mapotf](https://github.com/Azure/mapotf) configuration files written in HCL (HashiCorp Configuration Language) to define upgrade guides. These guides are interpreted and executed by the Mapotf engine to perform various tasks such as:
+TerraformConfigWelder leverages [Mapotf](https://github.com/Azure/mapotf) configuration files written in HCL (HashiCorp Configuration Language) to define upgrade guides. These guides are interpreted and executed by the Mapotf engine to perform various tasks such as:
 
 - Removing deprecated attributes and nested blocks.
 - Renaming attributes and nested blocks.
@@ -13,7 +13,7 @@ TerraformJumper leverages [Mapotf](https://github.com/Azure/mapotf) configuratio
 ## Known Limitations
 
 1. **HCL Only**: Pusu currently supports only HCL files. JSON files are not supported at this time.
-2. **Nested Block Renaming**: Pusu cannot use a renamed nested block name to match elements. For example, if you rename `foo` to `bar`, you cannot match `name` under the original `foo` block using `bar.name`.
+2. **Nested Block Renaming**: TerraformConfigWelder cannot use a renamed nested block name to match elements. For example, if you rename `foo` to `bar`, you cannot match `name` under the original `foo` block using `bar.name`.
 
 ## Install Mapotf
 
@@ -23,7 +23,7 @@ You can install mapotf by the following command(Assuming you have installed Gola
 go install github.com/Azure/mapoft@latest
 ```
 
-We've also provided a devcontainer so you're welcomed to try TerraformJumper in GitHub CodeSpace.
+We've also provided a devcontainer so you're welcomed to try TerraformConfigWelder in GitHub CodeSpace.
 
 ## How to
 

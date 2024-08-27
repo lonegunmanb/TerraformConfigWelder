@@ -27,23 +27,31 @@ We've provided a set of demo Terraform `azurerm` resource blocks to demonstrate 
 Execute the following command to run the migration:
 
 ```shell
-mapotf transform -r --mptf-dir git::https://github.com/lonegunmanb/TerraformConfigWelder.git//azurerm/v3_v4 --tf-dir .
+mapotf transform -r --mptf-dir git::https://github.com/lonegunmanb/TerraformConfigWelder.git//azurerm/v3_v4 --tf-dir test-fitness
 ```
 
 `mapotf transform` is the command to start the transformation process. `--mptf-dir` and `--tf-dir` are the directories where the Mapotf configuration files and Terraform configuration files are located, respectively.
+
+`test-fitness` is a folder contains examples of Terraform configuration files that use `azurerm` provider version `v3`. The expected output is stored as `xxx.wanted.hcl`. If you run the transforms we provided then `avmfix -folder test-fitness`, the Terraform configs would be transformed exactly as the `xxx.wanted.hcl` files. You can install `avmfix` by running `go install github.com/lonegunmanb/avmfix@latest`.
 
 You can try yourself and then compare the changes in the Terraform configuration files.
 
 Finally, you can always revert changes made by Mapotf by `reset` command: 
 
 ```Shell
-mapotf reset
+mapotf reset --tf-dir test-fitness
 ```
 
 If you'd like to run these transforms against your own Terraform configuration files, you can use the following command:
 
 ```shell
 mapotf transform --tf-dir <your_terraform_config_folder> --mptf-dir git::https://github.com/lonegunmanb/TerraformConfigWelder.git//azurerm/v3_v4
+```
+
+To revert changes:
+
+```shell
+mapotf reset --tf-dir <your_terraform_config_folder>
 ```
 
 ## Transform categories
@@ -86,9 +94,13 @@ All removed resources, data sources won't be transformed.
 
 All new default values introduced by `v4` won't be transformed.
 
+All changes to attribute's default value won't be processed.
+
 All new required properties introduced by `v4` won't be transformed.
 
 All `xxx and yyy must be set together` rules won't be processed.
+
+All `The deprecated block xxx has been removed in favour of the azurerm_yyy resource.` changes won't be processed.
 
 The following breaking changes on managed resources are not processed in this version:
 
