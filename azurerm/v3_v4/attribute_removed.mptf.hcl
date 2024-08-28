@@ -7,6 +7,7 @@ locals {
       ["user_managed_https.key_vault_certificate_id"]
     )
     azurerm_container_registry = toset([
+      "encryption.enabled",
       "retention_policy",
       "trust_policy",
       "network_rule_set.virtual_network",
@@ -48,7 +49,9 @@ transform "remove_block_element" auto_generated_attribute_removed {
   for_each             = var.attribute_removed_toggle ? try(local.auto_generated_attribute_removed_map, {}) : tomap({})
   target_block_address = each.key
   paths                = try(setsubtract(local.diffs[each.value.mptf.block_labels[0]].deleted, local.attribute_removed_bypass[each.value.mptf.block_labels[0]]), local.diffs[each.value.mptf.block_labels[0]].deleted)
-  depends_on           = [transform.regex_replace_expression.simply_renamed]
+  depends_on           = [
+    transform.regex_replace_expression.simply_renamed,
+  ]
 }
 
 transform "remove_block_element" extra_attribute_removed {

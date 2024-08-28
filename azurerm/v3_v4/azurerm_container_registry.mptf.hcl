@@ -7,6 +7,32 @@ locals {
   container_registry_with_trust_policy_only = {
     for key, block in local.container_registry_resource_blocks_map : key => block if try(block.retention_policy != null, false) && !can(block.trust_policy_enabled)
   }
+  container_registry_with_static_encryption_and_enabled = {
+    for key, block in local.container_registry_resource_blocks_map : key => block if can(block.encryption[0]) && !can(block.encryption[0].for_each)
+  }
+}
+
+transform "remove_block_element" container_registry_with_static_encryption_and_enabled {
+  for_each             = var.azurerm_container_registry_toggle ? local.container_registry_with_static_encryption_and_enabled : tomap({})
+  target_block_address = each.key
+  paths                = ["encryption"]
+}
+
+transform "update_in_place" container_registry_with_static_encryption_and_enabled {
+  for_each             = var.azurerm_container_registry_toggle ? local.container_registry_with_static_encryption_and_enabled : tomap({})
+  target_block_address = each.key
+  asstring {
+    dynamic "encryption" {
+      for_each = "(${local.container_registry_resource_blocks_map[each.key].encryption[0].enabled}) ? [\"encryption\"] : []"
+      content {
+        identity_client_id = try(local.container_registry_resource_blocks_map[each.key].encryption[0].identity_client_id, "null")
+        key_vault_key_id   = try(local.container_registry_resource_blocks_map[each.key].encryption[0].key_vault_key_id, "null")
+      }
+    }
+  }
+    depends_on = [
+        transform.remove_block_element.container_registry_with_static_encryption_and_enabled,
+    ]
 }
 
 transform "update_in_place" container_registry_with_regention_policy_dot_days_only {
@@ -15,6 +41,9 @@ transform "update_in_place" container_registry_with_regention_policy_dot_days_on
   asstring {
     retention_policy_in_days = local.container_registry_resource_blocks_map[each.key].retention_policy[0].days
   }
+  depends_on = [
+    transform.update_in_place.container_registry_with_static_encryption_and_enabled,
+  ]
 }
 
 transform "remove_block_element" container_registry_with_regention_policy_dot_days_only {

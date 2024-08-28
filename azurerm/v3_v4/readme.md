@@ -106,6 +106,12 @@ The following breaking changes on managed resources are not processed in this ve
 
 * `azurerm_automation_software_update_configuration`
   - The property `target.azure_query.tag_filter` is no longer Computed. If you experience a diff as a result of this change you may need to add this to ignore_changes.
+* [`azurerm_container_group`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/4.0-upgrade-guide#azurerm_container_group)
+  - The deprecated network_profile_id property has been removed in favour of the subnet_ids property. (**We'll only remove `network_profile_id`, we won't amend `subnet_ids` for you**)
+  - The `container.liveness_probe.http_get.scheme` property is now case-sensitive. You will need to update your configuration to match the casing expected by the API.
+  - The `container.readiness_probe.http_get.scheme` property is now case-sensitive. You will need to update your configuration to match the casing expected by the API.
+* [`azurerm_cosmosdb_account`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/4.0-upgrade-guide#azurerm_cosmosdb_account)
+  - The `ip_range_filter` property is now a set that will only accept valid CIDR values.
 * [`azurerm_image`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_image)
   - A new required property `storage_type` has been added to the `os_disk` and `data_disk` blocks.
 * [`azurerm_monitor_action_group`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_monitor_action_group)
