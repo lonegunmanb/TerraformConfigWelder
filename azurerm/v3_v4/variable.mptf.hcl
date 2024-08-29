@@ -65,8 +65,8 @@ variable "azurerm_linux_virtual_machine_scale_set_toggle" {
 }
 
 variable "azurerm_kubernetes_cluster_toggle" {
-    type    = bool
-    default = true
+  type    = bool
+  default = true
 }
 
 variable "azurerm_container_registry_toggle" {

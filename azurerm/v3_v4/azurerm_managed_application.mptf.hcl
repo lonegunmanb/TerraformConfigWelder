@@ -22,3 +22,9 @@ transform "remove_block_element" managed_application {
     transform.update_in_place.managed_application,
   ]
 }
+
+transform regex_replace_expression managed_application_parameters {
+  for_each    = var.azurerm_managed_application_toggle ? ["managed_application_parameters"] : []
+  regex       = "azurerm_managed_application\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?parameters"
+  replacement = "({ for k,v in jsondecode(azurerm_managed_application.$${1}$${2}$${3}$${4}$${5}parameter_values) : k => v.value})"
+}
