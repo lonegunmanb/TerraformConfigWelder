@@ -41,6 +41,9 @@ locals {
     azurerm_kubernetes_fleet_manager = toset([
       "hub_profile"
     ])
+    azurerm_management_group_policy_remediation = toset([
+      "resource_discovery_mode",
+    ])
     azurerm_recovery_services_site_recovery_replicated_vm = toset([
       "is_primary",
     ])

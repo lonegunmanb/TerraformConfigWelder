@@ -110,6 +110,8 @@ The following breaking changes on managed resources are not processed in this ve
   - The deprecated network_profile_id property has been removed in favour of the subnet_ids property. (**We'll only remove `network_profile_id`, we won't amend `subnet_ids` for you**)
   - The `container.liveness_probe.http_get.scheme` property is now case-sensitive. You will need to update your configuration to match the casing expected by the API.
   - The `container.readiness_probe.http_get.scheme` property is now case-sensitive. You will need to update your configuration to match the casing expected by the API.
+* [`azurerm_container_registry`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/4.0-upgrade-guide#azurerm_container_registry)
+  - The deprecated `encryption.enabled` property has been removed. Encryption can be toggled on and off through the presence and absence of the encryption block in the configuration. **Only non-dynamic `encryption` block with `enabled` would be processed.**
 * [`azurerm_cosmosdb_account`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/4.0-upgrade-guide#azurerm_cosmosdb_account)
   - The `ip_range_filter` property is now a set that will only accept valid CIDR values.
 * [`azurerm_image`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_image)
