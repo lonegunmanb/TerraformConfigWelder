@@ -2,6 +2,7 @@ locals {
   extra_oc_removed = {
     azurerm_kubernetes_cluster = [
       "network_profile.load_balancer_profile.outbound_ip_prefix_ids",
+      "network_profile.load_balancer_profile.outbound_ip_address_ids",
     ]
     azurerm_machine_learning_datastore_datalake_gen2 = [
       "authority_url",

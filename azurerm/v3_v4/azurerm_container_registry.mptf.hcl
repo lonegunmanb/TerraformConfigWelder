@@ -30,9 +30,9 @@ transform "update_in_place" container_registry_with_static_encryption_and_enable
       }
     }
   }
-    depends_on = [
-        transform.remove_block_element.container_registry_with_static_encryption_and_enabled,
-    ]
+  depends_on = [
+    transform.remove_block_element.container_registry_with_static_encryption_and_enabled,
+  ]
 }
 
 transform "update_in_place" container_registry_with_regention_policy_dot_days_only {

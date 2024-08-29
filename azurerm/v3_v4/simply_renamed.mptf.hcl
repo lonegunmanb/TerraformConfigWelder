@@ -87,11 +87,6 @@ locals {
           replace_ref = true
         },
         {
-          from        = "api_server_authorized_ip_ranges"
-          to          = "authorized_ip_ranges"
-          replace_ref = true
-        },
-        {
           from        = "automatic_channel_upgrade"
           to          = "automatic_upgrade_channel"
           replace_ref = true
@@ -104,6 +99,16 @@ locals {
         {
           from        = "default_node_pool.enable_auto_scaling"
           to          = "auto_scaling_enabled"
+          replace_ref = true
+        },
+        {
+          from        = "default_node_pool.enable_node_public_ip"
+          to          = "node_public_ip_enabled"
+          replace_ref = true
+        },
+        {
+          from        = "default_node_pool.enable_host_encryption"
+          to          = "host_encryption_enabled"
           replace_ref = true
         }
       ]

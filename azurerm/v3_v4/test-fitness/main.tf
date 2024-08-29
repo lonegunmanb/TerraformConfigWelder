@@ -57,41 +57,6 @@ output "topic_partitioning_enabled" {
   value = azurerm_servicebus_topic.example[0].enable_partitioning
 }
 
-resource "azurerm_kubernetes_cluster" "example" {
-  count = 1
-
-  location                        = azurerm_resource_group.example.location
-  name                            = "example-aks1"
-  resource_group_name             = azurerm_resource_group.example.name
-  api_server_authorized_ip_ranges = ["198.51.100.0/24"]
-  dns_prefix                      = "exampleaks1"
-  tags = {
-    Environment = "Production"
-  }
-
-  default_node_pool {
-    name       = "default"
-    vm_size    = "Standard_D2_v2"
-    node_count = 1
-
-    linux_os_config {
-      swap_file_size_mb = 100
-    }
-  }
-  identity {
-    type = "SystemAssigned"
-  }
-  network_profile {
-    network_plugin  = "azure"
-    ebpf_data_plane = "azure"
-  }
-}
-
-locals {
-  ebpf_data_plane   = one(azurerm_kubernetes_cluster.example[0].network_profile.*.ebpf_data_plane)
-  swap_file_size_mb = azurerm_kubernetes_cluster.example[0].default_node_pool[0].linux_os_config[0].swap_file_size_mb
-}
-
 resource "azurerm_linux_virtual_machine_scale_set" "example" {
   count = 1
 
@@ -249,57 +214,6 @@ resource "azurerm_subnet" "example" {
       name    = "Microsoft.ContainerInstance/containerGroups"
       actions = ["Microsoft.Network/virtualNetworks/subnets/join/action", "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action"]
     }
-  }
-}
-
-resource "azurerm_key_vault_managed_hardware_security_module_role_assignment" "with_count" {
-  count = 1
-
-  name               = "a9dbe818-56e7-5878-c0ce-a1477692c1d6"
-  principal_id       = data.azurerm_client_config.current.object_id
-  role_definition_id = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.resource_id
-  scope              = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.scope
-  vault_base_url     = count.index == 1 ? var.key_vault_managed_hardware_security_module_role_assignment_vault_base_url : ""
-}
-
-resource "azurerm_key_vault_managed_hardware_security_module_role_assignment" "with_for_each" {
-  for_each = [1]
-
-  name               = "a9dbe818-56e7-5878-c0ce-a1477692c1d6"
-  principal_id       = data.azurerm_client_config.current.object_id
-  role_definition_id = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.resource_id
-  scope              = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.scope
-  vault_base_url     = each.value == 1 ? var.key_vault_managed_hardware_security_module_role_assignment_vault_base_url : ""
-}
-
-resource "azurerm_key_vault_managed_hardware_security_module_role_assignment" "this" {
-  provider = azurerm.alternate
-
-  name               = "a9dbe818-56e7-5878-c0ce-a1477692c1d6"
-  principal_id       = data.azurerm_client_config.current.object_id
-  role_definition_id = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.resource_id
-  scope              = data.azurerm_key_vault_managed_hardware_security_module_role_definition.user.scope
-  vault_base_url     = var.key_vault_managed_hardware_security_module_role_assignment_vault_base_url
-}
-
-resource "azurerm_databricks_workspace" "example" {
-  location                              = azurerm_resource_group.example.location
-  name                                  = "databricks-test"
-  resource_group_name                   = azurerm_resource_group.example.name
-  sku                                   = "standard"
-  network_security_group_rules_required = "AllRules"
-  tags = {
-    Environment = "Production"
-  }
-}
-
-resource "azurerm_dev_test_lab" "example" {
-  location            = azurerm_resource_group.example.location
-  name                = "example-devtestlab"
-  resource_group_name = azurerm_resource_group.example.name
-  storage_type        = "Premium"
-  tags = {
-    "Sydney" = "Australia"
   }
 }
 

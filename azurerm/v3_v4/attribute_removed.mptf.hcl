@@ -12,6 +12,11 @@ locals {
       "trust_policy",
       "network_rule_set.virtual_network",
     ])
+    azurerm_kubernetes_cluster = toset([
+      "automatic_channel_upgrade",
+      "node_os_channel_upgrade",
+      "web_app_routing.dns_zone_id",
+    ])
   }
   auto_generated_attribute_removed     = flatten([for _, blocks in flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if try(local.diffs[resource_type].deleted != null, false)]) : [for b in blocks : b]])
   auto_generated_attribute_removed_map = { for block in local.auto_generated_attribute_removed : block.mptf.block_address => block }
@@ -28,7 +33,7 @@ locals {
       "network_profile_id",
     ])
     azurerm_hdinsight_kafka_cluster = toset([
-      "roles.kafka_management_node"
+      "roles.kafka_management_node.username"
     ])
     azurerm_kubernetes_fleet_manager = toset([
       "hub_profile"
@@ -49,7 +54,7 @@ transform "remove_block_element" auto_generated_attribute_removed {
   for_each             = var.attribute_removed_toggle ? try(local.auto_generated_attribute_removed_map, {}) : tomap({})
   target_block_address = each.key
   paths                = try(setsubtract(local.diffs[each.value.mptf.block_labels[0]].deleted, local.attribute_removed_bypass[each.value.mptf.block_labels[0]]), local.diffs[each.value.mptf.block_labels[0]].deleted)
-  depends_on           = [
+  depends_on = [
     transform.regex_replace_expression.simply_renamed,
   ]
 }
