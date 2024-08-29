@@ -129,6 +129,11 @@ variable "azurerm_vpn_gateway_nat_rule_toggle" {
   default = true
 }
 
+variable "azurerm_managed_disk_toggle" {
+  type    = bool
+  default = true
+}
+
 variable "data_azurerm_cosmosdb_account_toggle" {
   type    = bool
   default = true

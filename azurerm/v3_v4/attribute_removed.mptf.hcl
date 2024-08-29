@@ -17,6 +17,9 @@ locals {
       "node_os_channel_upgrade",
       "web_app_routing.dns_zone_id",
     ])
+    azurerm_managed_disk = toset([
+      "encryption_settings.enabled"
+    ])
   }
   auto_generated_attribute_removed     = flatten([for _, blocks in flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if try(local.diffs[resource_type].deleted != null, false)]) : [for b in blocks : b]])
   auto_generated_attribute_removed_map = { for block in local.auto_generated_attribute_removed : block.mptf.block_address => block }
