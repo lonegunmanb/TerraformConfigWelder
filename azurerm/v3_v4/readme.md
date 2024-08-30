@@ -119,8 +119,8 @@ The following breaking changes on managed resources are not processed in this ve
 * [`azurerm_monitor_diagnostic_categories`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_monitor_diagnostic_categories)
   - The deprecated property `logs` will be removed in favour of the `log_category_types` property.
 * [`azurerm_monitor_diagnostic_setting`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_monitor_diagnostic_setting)
-  - The deprecated `enabled_log.retention_policy` block has been removed in favour of the `azurerm_storage_management_policy` resource.
-  - The deprecated `metric.retention_policy` block has been removed in favour of the `azurerm_storage_management_policy` resource.
+  - The deprecated `enabled_log.retention_policy` block has been removed in favour of the `azurerm_storage_management_policy` resource. **We WILL NOT create `azurerm_storage_management_policy` for you.**
+  - The deprecated `metric.retention_policy` block has been removed in favour of the `azurerm_storage_management_policy` resource. **We WILL NOT create `azurerm_storage_management_policy` for you.**
 * [`azurerm_nginx_deployment`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_nginx_deployment)
   - The deprecated block `configuration` has been removed in favour of the `azurerm_nginx_configuration` resource.
 * [`azurerm_attestation_provider`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_attestation_provider)

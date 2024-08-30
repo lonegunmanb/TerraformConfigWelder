@@ -12,7 +12,7 @@ transform "update_in_place" monitor_aad_diagnostic_setting {
   asstring {
     dynamic "enabled_log" {
       for_each = can(each.value.log[0].for_each) ? "try((${each.value.log[0].enabled}) ? { for k,v in (${each.value.log[0].for_each}) : k => v } : tomap({}), (${each.value.log[0].enabled}) ? (${each.value.log[0].for_each}) : toset([]), (${each.value.log[0].for_each}))" : try("(${each.value.log[0].enabled}) ? [\"enabled_log\"] : []", "[\"enabled_log\"]")
-      iterator = try(each.value.log[0].iterator, "enabled_log")
+      iterator = try(each.value.log[0].iterator, "log")
       content {
         category = try(each.value.log[0].category, "null")
         dynamic "retention_policy" {

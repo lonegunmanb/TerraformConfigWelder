@@ -136,13 +136,6 @@ locals {
           replace_ref = true
         }
       ]
-      azurerm_monitor_diagnostic_setting = [
-        {
-          from        = "log"
-          to          = "enabled_log"
-          replace_ref = true
-        }
-      ]
       azurerm_management_group_policy_remediation = [
         {
           from        = "policy_definition_id"
@@ -271,7 +264,7 @@ transform rename_block_element simply_renamed {
     }
   }
   depends_on = [
-    transform.remove_block_element.monitor_diagnostic_setting,
+    transform.remove_block_element.monitor_diagnostic_setting_log,
     transform.regex_replace_expression.simply_renamed,
     transform.update_in_place.oc_removed,
   ]

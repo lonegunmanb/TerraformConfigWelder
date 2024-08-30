@@ -57,28 +57,6 @@ output "topic_partitioning_enabled" {
   value = azurerm_servicebus_topic.example[0].enable_partitioning
 }
 
-resource "azurerm_monitor_diagnostic_setting" "example" {
-  name               = "example"
-  target_resource_id = azurerm_key_vault.example.id
-  storage_account_id = azurerm_storage_account.example.id
-
-  log {
-    category = "AuditEvent"
-    enabled  = false
-
-    retention_policy {
-      enabled = false
-    }
-  }
-  metric {
-    category = "AllMetrics"
-
-    retention_policy {
-      enabled = false
-    }
-  }
-}
-
 
 module "mod" {
   source = "./sub_module"
