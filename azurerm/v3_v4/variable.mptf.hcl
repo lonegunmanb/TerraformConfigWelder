@@ -134,6 +134,11 @@ variable "azurerm_managed_disk_toggle" {
   default = true
 }
 
+variable "azurerm_monitor_aad_diagnostic_setting_toggle" {
+  type    = bool
+  default = true
+}
+
 variable "data_azurerm_cosmosdb_account_toggle" {
   type    = bool
   default = true

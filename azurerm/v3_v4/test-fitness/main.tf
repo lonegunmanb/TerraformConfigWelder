@@ -57,48 +57,6 @@ output "topic_partitioning_enabled" {
   value = azurerm_servicebus_topic.example[0].enable_partitioning
 }
 
-resource "azurerm_monitor_aad_diagnostic_setting" "example" {
-  name               = "setting1"
-  storage_account_id = azurerm_storage_account.example.id
-
-  log {
-    category = "SignInLogs"
-    enabled  = true
-
-    retention_policy {
-      days    = 1
-      enabled = true
-    }
-  }
-  log {
-    category = "AuditLogs"
-    enabled  = true
-
-    retention_policy {
-      days    = 1
-      enabled = true
-    }
-  }
-  log {
-    category = "NonInteractiveUserSignInLogs"
-    enabled  = true
-
-    retention_policy {
-      days    = 1
-      enabled = true
-    }
-  }
-  log {
-    category = "ServicePrincipalSignInLogs"
-    enabled  = true
-
-    retention_policy {
-      days    = 1
-      enabled = true
-    }
-  }
-}
-
 resource "azurerm_monitor_diagnostic_setting" "example" {
   name               = "example"
   target_resource_id = azurerm_key_vault.example.id
@@ -121,9 +79,6 @@ resource "azurerm_monitor_diagnostic_setting" "example" {
   }
 }
 
-locals {
-  enabled_log = azurerm_monitor_aad_diagnostic_setting.example.log[0]
-}
 
 module "mod" {
   source = "./sub_module"

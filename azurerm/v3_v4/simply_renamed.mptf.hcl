@@ -136,13 +136,6 @@ locals {
           replace_ref = true
         }
       ]
-      azurerm_monitor_aad_diagnostic_setting = [
-        {
-          from        = "log"
-          to          = "enabled_log"
-          replace_ref = true
-        }
-      ]
       azurerm_monitor_diagnostic_setting = [
         {
           from        = "log"
