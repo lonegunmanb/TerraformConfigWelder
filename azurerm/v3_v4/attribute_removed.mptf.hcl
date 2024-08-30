@@ -44,6 +44,12 @@ locals {
     azurerm_management_group_policy_remediation = toset([
       "resource_discovery_mode",
     ])
+    azurerm_mssql_managed_database = toset([
+      "long_term_retention_policy.immutable_backups_enabled",
+    ])
+    azurerm_mssql_database = toset([
+      "long_term_retention_policy.immutable_backups_enabled",
+    ])
     azurerm_recovery_services_site_recovery_replicated_vm = toset([
       "is_primary",
     ])
