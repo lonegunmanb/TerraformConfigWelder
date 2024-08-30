@@ -123,6 +123,8 @@ The following breaking changes on managed resources are not processed in this ve
   - The deprecated `metric.retention_policy` block has been removed in favour of the `azurerm_storage_management_policy` resource. **We WILL NOT create `azurerm_storage_management_policy` for you.**
 * [`azurerm_nginx_deployment`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_nginx_deployment)
   - The deprecated block `configuration` has been removed in favour of the `azurerm_nginx_configuration` resource.
+* [`azurerm_private_dns_resolver_inbound_endpoint`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/4.0-upgrade-guide#azurerm_private_dns_resolver_inbound_endpoint)
+  - The `ip_configurations` block can have a maximum of one item.
 * [`azurerm_attestation_provider`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_attestation_provider)
   - The deprecated block policy has been removed in favour of the `open_enclave_policy_base64`, `sgx_enclave_policy_base64`, `tpm_policy_base64` and `sev_snp_policy_base64` properties.
 * [`azurerm_site_recovery_replication_recovery_plan`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_site_recovery_replication_recovery_plan)
