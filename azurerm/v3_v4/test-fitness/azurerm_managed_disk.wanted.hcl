@@ -11,10 +11,12 @@ resource "azurerm_managed_disk" "enabled" {
 
   dynamic "encryption_settings" {
     for_each = (true) ? ["encryption_settings"] : []
+    iterator = encryption_settings
 
     content {
       dynamic "disk_encryption_key" {
         for_each = []
+        iterator = disk_encryption_key
 
         content {
           secret_url      = null
@@ -23,6 +25,7 @@ resource "azurerm_managed_disk" "enabled" {
       }
       dynmaic "key_encryption_key" {
         for_each = []
+        iterator = key_encryption_key
 
         content {
           key_url         = null
@@ -46,10 +49,12 @@ resource "azurerm_managed_disk" "disabled" {
 
   dynamic "encryption_settings" {
     for_each = (false) ? ["encryption_settings"] : []
+    iterator = encryption_settings
 
     content {
       dynamic "disk_encryption_key" {
         for_each = []
+        iterator = disk_encryption_key
 
         content {
           secret_url      = null
@@ -58,6 +63,7 @@ resource "azurerm_managed_disk" "disabled" {
       }
       dynmaic "key_encryption_key" {
         for_each = []
+        iterator = key_encryption_key
 
         content {
           key_url         = null
@@ -81,10 +87,12 @@ resource "azurerm_managed_disk" "disk_encryption_key" {
 
   dynamic "encryption_settings" {
     for_each = (true) ? ["encryption_settings"] : []
+    iterator = encryption_settings
 
     content {
       dynamic "disk_encryption_key" {
         for_each = ["disk_encryption_key"]
+        iterator = disk_encryption_key
 
         content {
           secret_url      = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_disk_encryption_key_secret_url
@@ -93,6 +101,7 @@ resource "azurerm_managed_disk" "disk_encryption_key" {
       }
       dynmaic "key_encryption_key" {
         for_each = []
+        iterator = key_encryption_key
 
         content {
           key_url         = null
@@ -116,10 +125,12 @@ resource "azurerm_managed_disk" "key_encryption_key" {
 
   dynamic "encryption_settings" {
     for_each = (true) ? ["encryption_settings"] : []
+    iterator = encryption_settings
 
     content {
       dynamic "disk_encryption_key" {
         for_each = []
+        iterator = disk_encryption_key
 
         content {
           secret_url      = null
@@ -128,6 +139,7 @@ resource "azurerm_managed_disk" "key_encryption_key" {
       }
       dynmaic "key_encryption_key" {
         for_each = ["key_encryption_key"]
+        iterator = key_encryption_key
 
         content {
           key_url         = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_key_encryption_key_key_url
@@ -138,7 +150,7 @@ resource "azurerm_managed_disk" "key_encryption_key" {
   }
 }
 
-resource "azurerm_managed_disk" "dynamic_encryption_settings_should_not_be_touched" {
+resource "azurerm_managed_disk" "dynamic_encryption_settings" {
   create_option        = "Empty"
   location             = azurerm_resource_group.example.location
   name                 = "enabled"
@@ -150,18 +162,33 @@ resource "azurerm_managed_disk" "dynamic_encryption_settings_should_not_be_touch
   }
 
   dynamic "encryption_settings" {
-    for_each = ["encryption_settings"]
+    for_each = try((true) ? { for k, v in(["encryption_settings"]) : k => v } : tomap({}), (true) ? (["encryption_settings"]) : toset([]))
+    iterator = encryption_settings
 
     content {
-      key_encryption_key {
-        key_url         = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_key_encryption_key_key_url
-        source_vault_id = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_key_encryption_key_source_vault_id
+      dynamic "disk_encryption_key" {
+        for_each = []
+        iterator = disk_encryption_key
+
+        content {
+          secret_url      = null
+          source_vault_id = null
+        }
+      }
+      dynmaic "key_encryption_key" {
+        for_each = ["key_encryption_key"]
+        iterator = key_encryption_key
+
+        content {
+          key_url         = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_key_encryption_key_key_url
+          source_vault_id = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_key_encryption_key_source_vault_id
+        }
       }
     }
   }
 }
 
-resource "azurerm_managed_disk" "dynamic_disk_encryption_key_should_not_be_touched" {
+resource "azurerm_managed_disk" "dynamic_encryption_settings_with_iterator" {
   create_option        = "Empty"
   location             = azurerm_resource_group.example.location
   name                 = "enabled"
@@ -172,21 +199,34 @@ resource "azurerm_managed_disk" "dynamic_disk_encryption_key_should_not_be_touch
     environment = "staging"
   }
 
-  encryption_settings {
-    enabled = true
+  dynamic "encryption_settings" {
+    for_each = try((true) ? { for k, v in(["encryption_settings"]) : k => v } : tomap({}), (true) ? (["encryption_settings"]) : toset([]))
+    iterator = enc
 
-    dynamic "disk_encryption_key" {
-      for_each = ["disk_encryption_key"]
+    content {
+      dynamic "disk_encryption_key" {
+        for_each = []
+        iterator = disk_encryption_key
 
-      content {
-        secret_url      = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_disk_encryption_key_secret_url
-        source_vault_id = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_disk_encryption_key_source_vault_id
+        content {
+          secret_url      = null
+          source_vault_id = null
+        }
+      }
+      dynmaic "key_encryption_key" {
+        for_each = ["key_encryption_key"]
+        iterator = key_encryption_key
+
+        content {
+          key_url         = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_key_encryption_key_key_url
+          source_vault_id = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_key_encryption_key_source_vault_id
+        }
       }
     }
   }
 }
 
-resource "azurerm_managed_disk" "key_encryption_key_should_not_be_touched" {
+resource "azurerm_managed_disk" "dynamic_disk_encryption_key" {
   create_option        = "Empty"
   location             = azurerm_resource_group.example.location
   name                 = "enabled"
@@ -197,15 +237,142 @@ resource "azurerm_managed_disk" "key_encryption_key_should_not_be_touched" {
     environment = "staging"
   }
 
-  encryption_settings {
-    enabled = true
+  dynamic "encryption_settings" {
+    for_each = (true) ? ["encryption_settings"] : []
+    iterator = encryption_settings
 
-    dynamic "key_encryption_key" {
-      for_each = ["key_encryption_key"]
+    content {
+      dynamic "disk_encryption_key" {
+        for_each = ["disk_encryption_key"]
+        iterator = disk_encryption_key
 
-      content {
-        key_url         = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_key_encryption_key_key_url
-        source_vault_id = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_key_encryption_key_source_vault_id
+        content {
+          secret_url      = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_disk_encryption_key_secret_url
+          source_vault_id = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_disk_encryption_key_source_vault_id
+        }
+      }
+      dynmaic "key_encryption_key" {
+        for_each = []
+        iterator = key_encryption_key
+
+        content {
+          key_url         = null
+          source_vault_id = null
+        }
+      }
+    }
+  }
+}
+
+resource "azurerm_managed_disk" "dynamic_disk_encryption_key_with_iterator" {
+  create_option        = "Empty"
+  location             = azurerm_resource_group.example.location
+  name                 = "enabled"
+  resource_group_name  = azurerm_resource_group.example.name
+  storage_account_type = "Standard_LRS"
+  disk_size_gb         = "1"
+  tags = {
+    environment = "staging"
+  }
+
+  dynamic "encryption_settings" {
+    for_each = (true) ? ["encryption_settings"] : []
+    iterator = encryption_settings
+
+    content {
+      dynamic "disk_encryption_key" {
+        for_each = ["disk_encryption_key"]
+        iterator = dek
+
+        content {
+          secret_url      = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_disk_encryption_key_secret_url
+          source_vault_id = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_disk_encryption_key_source_vault_id
+        }
+      }
+      dynmaic "key_encryption_key" {
+        for_each = []
+        iterator = key_encryption_key
+
+        content {
+          key_url         = null
+          source_vault_id = null
+        }
+      }
+    }
+  }
+}
+
+resource "azurerm_managed_disk" "dynamic_key_encryption_key" {
+  create_option        = "Empty"
+  location             = azurerm_resource_group.example.location
+  name                 = "enabled"
+  resource_group_name  = azurerm_resource_group.example.name
+  storage_account_type = "Standard_LRS"
+  disk_size_gb         = "1"
+  tags = {
+    environment = "staging"
+  }
+
+  dynamic "encryption_settings" {
+    for_each = (true) ? ["encryption_settings"] : []
+    iterator = encryption_settings
+
+    content {
+      dynamic "disk_encryption_key" {
+        for_each = []
+        iterator = disk_encryption_key
+
+        content {
+          secret_url      = null
+          source_vault_id = null
+        }
+      }
+      dynmaic "key_encryption_key" {
+        for_each = ["key_encryption_key"]
+        iterator = key_encryption_key
+
+        content {
+          key_url         = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_key_encryption_key_key_url
+          source_vault_id = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_key_encryption_key_source_vault_id
+        }
+      }
+    }
+  }
+}
+
+resource "azurerm_managed_disk" "dynamic_key_encryption_key_with_iterator" {
+  create_option        = "Empty"
+  location             = azurerm_resource_group.example.location
+  name                 = "enabled"
+  resource_group_name  = azurerm_resource_group.example.name
+  storage_account_type = "Standard_LRS"
+  disk_size_gb         = "1"
+  tags = {
+    environment = "staging"
+  }
+
+  dynamic "encryption_settings" {
+    for_each = (true) ? ["encryption_settings"] : []
+    iterator = encryption_settings
+
+    content {
+      dynamic "disk_encryption_key" {
+        for_each = []
+        iterator = disk_encryption_key
+
+        content {
+          secret_url      = null
+          source_vault_id = null
+        }
+      }
+      dynmaic "key_encryption_key" {
+        for_each = ["key_encryption_key"]
+        iterator = kek
+
+        content {
+          key_url         = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_key_encryption_key_key_url
+          source_vault_id = var.azurerm_managed_disk_disk_encryption_key_encryption_settings_key_encryption_key_source_vault_id
+        }
       }
     }
   }
