@@ -20,7 +20,7 @@ transform "update_in_place" monitor_diagnostic_setting {
       for_each = can(each.value.log[0].for_each) ? "try((${each.value.log[0].enabled}) ? { for k,v in (${each.value.log[0].for_each}) : k => v } : tomap({}), (${each.value.log[0].enabled}) ? (${each.value.log[0].for_each}) : toset([]), (${each.value.log[0].for_each}))" : try("(${each.value.log[0].enabled}) ? [\"enabled_log\"] : []", "[\"enabled_log\"]")
       iterator = try(each.value.log[0].iterator, "log")
       content {
-        category = try(each.value.log[0].category, "null")
+        category       = try(each.value.log[0].category, "null")
         category_group = try(each.value.log[0].category_group, "null")
       }
     }

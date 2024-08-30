@@ -28,6 +28,11 @@ variable "data_simply_renamed_toggle" {
   default = true
 }
 
+variable "azurerm_snapshot_toggle" {
+  type    = bool
+  default = true
+}
+
 variable "azurerm_monitor_diagnostic_setting_toggle" {
   type    = bool
   default = true
