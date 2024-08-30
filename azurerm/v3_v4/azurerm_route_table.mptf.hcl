@@ -22,3 +22,9 @@ transform "remove_block_element" route_table_disable_bgp_route_propagation {
     transform.update_in_place.route_table_disable_bgp_route_propagation,
   ]
 }
+
+transform regex_replace_expression route_table_disable_bgp_route_propagation {
+  for_each    = var.azurerm_route_table_toggle ? ["route_table_disable_bgp_route_propagation"] : []
+  regex       = "azurerm_route_table\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?disable_bgp_route_propagation"
+  replacement = "(!(azurerm_route_table.$${1}$${2}$${3}$${4}$${5}bgp_route_propagation_enabled))"
+}

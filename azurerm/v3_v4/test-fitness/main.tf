@@ -120,13 +120,6 @@ resource "azurerm_monitor_action_group" "example" {
   }
 }
 
-resource "azurerm_route_table" "example" {
-  location                      = "eastus"
-  name                          = "route_table"
-  resource_group_name           = "rg"
-  disable_bgp_route_propagation = var.azurerm_route_table_disable_bgp_route_propagation
-}
-
 resource "azurerm_sentinel_alert_rule_scheduled" "example" {
   display_name               = "example"
   log_analytics_workspace_id = azurerm_sentinel_log_analytics_workspace_onboarding.example.workspace_id
