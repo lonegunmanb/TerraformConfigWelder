@@ -53,6 +53,9 @@ locals {
     azurerm_recovery_services_site_recovery_replicated_vm = toset([
       "is_primary",
     ])
+    azurerm_sentinel_data_connector_microsoft_threat_intelligence = toset([
+      "bing_safety_phishing_url_lookback_date",
+    ])
     azurerm_signalr_service = toset([
       "live_trace_enabled",
     ])
