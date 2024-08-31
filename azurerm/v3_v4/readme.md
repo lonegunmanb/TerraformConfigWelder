@@ -131,6 +131,8 @@ The following breaking changes on managed resources are not processed in this ve
   - The deprecated block `recovery_group` has been removed in favour of the `shutdown_recovery_group`, `failover_recovery_group` and `boot_recovery_group` properties.
 * [`azurerm_sentinel_automation_rule`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_sentinel_automation_rule)
   - The deprecated property `condition` has been removed in favour of the `condition_json` property.
+* [`azurerm_subnet`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/4.0-upgrade-guide#azurerm_subnet)
+  - The `actions` block has become a Set instead of a List, meaning that the order of these items no longer matters. If you're referencing these items within your Terraform Configuration, then this may require some code changes.
 * [`azurerm_virtual_network`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_virtual_network)
   - The property `address_space` has been changed from a list to a set. If you're referencing an element in this property then this will require code changes.
 * [`azurerm_web_application_firewall_policy`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_web_application_firewall_policy)
