@@ -35,43 +35,7 @@ resource "azurerm_automation_software_update_configuration" "example" {
   }
 }
 
-resource "azurerm_servicebus_topic" "example" {
-  count = 1
 
-  name                      = "tfex_servicebus_topic"
-  namespace_id              = azurerm_servicebus_namespace.example.id
-  enable_batched_operations = true
-  enable_express            = true
-  enable_partitioning       = true
-}
-
-output "topic_express_enabled" {
-  value = azurerm_servicebus_topic.example[0].enable_express
-}
-
-output "topic_batched_operations_enabled" {
-  value = azurerm_servicebus_topic.example[0].enable_batched_operations
-}
-
-output "topic_partitioning_enabled" {
-  value = azurerm_servicebus_topic.example[0].enable_partitioning
-}
-
-
-module "mod" {
-  source = "./sub_module"
-  kubernetes_cluster_default_node_pool = {
-    name    = "default"
-    vm_size = "Standard_D2_v2"
-  }
-  kubernetes_cluster_location            = "eastus"
-  kubernetes_cluster_name                = "test"
-  kubernetes_cluster_resource_group_name = "testrg"
-  kubernetes_cluster_dns_prefix          = "test"
-  kubernetes_cluster_identity = {
-    type = "SystemAssigned"
-  }
-}
 
 provider "azurerm" {
   features {}
