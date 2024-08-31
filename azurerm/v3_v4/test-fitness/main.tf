@@ -77,25 +77,7 @@ provider "azurerm" {
   features {}
 }
 
-resource "azurerm_subnet" "example" {
-  address_prefixes                               = ["10.0.1.0/24"]
-  name                                           = "example-subnet"
-  resource_group_name                            = azurerm_resource_group.example.name
-  virtual_network_name                           = azurerm_virtual_network.example.name
-  enforce_private_link_endpoint_network_policies = var.subnet_enforce_private_link_endpoint_network_policies
-  enforce_private_link_service_network_policies  = var.enforce_private_link_service_network_policies
-  private_endpoint_network_policies_enabled      = var.private_endpoint_network_policies_enabled
-  private_link_service_network_policies_enabled  = var.private_link_service_network_policies_enabled
 
-  delegation {
-    name = "delegation"
-
-    service_delegation {
-      name    = "Microsoft.ContainerInstance/containerGroups"
-      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action", "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action"]
-    }
-  }
-}
 
 resource "azurerm_monitor_action_group" "example" {
   name                = "CriticalAlertsAction"
