@@ -5,16 +5,6 @@ resource "azurerm_virtual_network" "this" {
   resource_group_name = ""
 }
 
-resource "azurerm_servicebus_namespace" "example" {
-  location            = azurerm_resource_group.example.location
-  name                = "tfex-servicebus-namespace"
-  resource_group_name = azurerm_resource_group.example.name
-  sku                 = "Standard"
-  tags = {
-    source = "terraform"
-  }
-}
-
 resource "azurerm_automation_software_update_configuration" "example" {
   automation_account_id = azurerm_automation_account.example.id
   name                  = "example"
