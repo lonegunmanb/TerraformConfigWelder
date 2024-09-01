@@ -14,6 +14,10 @@ resource "azurerm_managed_disk" "enabled" {
   }
 }
 
+locals {
+  azurerm_managed_disk_encryption_settings_enabled = azurerm_managed_disk.enabled.encryption_settings[0].enabled
+}
+
 resource "azurerm_managed_disk" "disabled" {
   create_option        = "Empty"
   location             = azurerm_resource_group.example.location

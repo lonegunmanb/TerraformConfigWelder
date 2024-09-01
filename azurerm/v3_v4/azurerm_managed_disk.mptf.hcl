@@ -43,3 +43,9 @@ transform "remove_block_element" managed_disk {
   target_block_address = each.key
   paths                = ["encryption_settings"]
 }
+
+transform regex_replace_expression managed_disk {
+  for_each    = var.azurerm_managed_disk_toggle ? ["managed_disk"] : []
+  regex       = "azurerm_managed_disk\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?encryption_settings((?:\\[\\s*[^]]+\\s*\\]|\\.\\*)?)(\\.)(\\s*\\r?\\n\\s*)?enabled"
+  replacement = "(can(azurerm_managed_disk.$${1}$${2}$${3}$${4}$${5}encryption_settings$${6}))"
+}
