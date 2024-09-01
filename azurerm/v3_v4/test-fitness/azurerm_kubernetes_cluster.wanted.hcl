@@ -52,7 +52,7 @@ locals {
   azurerm_kubernetes_cluster_default_node_pool_enable_auto_scaling    = azurerm_kubernetes_cluster.example[0].default_node_pool[0].auto_scaling_enabled
   azurerm_kubernetes_cluster_default_node_pool_enable_host_encryption = azurerm_kubernetes_cluster.example[0].default_node_pool[0].host_encryption_enabled
   azurerm_kubernetes_cluster_default_node_pool_enable_node_public_ip  = azurerm_kubernetes_cluster.example[0].default_node_pool[0].node_public_ip_enabled
-  azurerm_kubernetes_cluster_ebpf_data_plane                          = one(azurerm_kubernetes_cluster.example[0].network_profile.*.network_data_plane)
+  azurerm_kubernetes_cluster_ebpf_data_plane                          = one(azurerm_kubernetes_cluster.example[0].network_profile.*.ebpf_data_plane)
   azurerm_kubernetes_cluster_node_os_channel_upgrade                  = azurerm_kubernetes_cluster.example[0].node_os_upgrade_channel
   azurerm_kubernetes_cluster_swap_file_size_mb                        = azurerm_kubernetes_cluster.example[0].default_node_pool[0].linux_os_config[0].swap_file_size_mb
 }

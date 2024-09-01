@@ -239,7 +239,7 @@ locals {
       resource_type = item_with_regex.resource_type
       paths         = item_with_regex.paths
       to            = item_with_regex.to
-      regex         = "${item_with_regex.resource_type}\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?${item_with_regex.regex}"
+      regex         = "(^|[^d]$|[^a]d$|[^t]da$|[^a]dat$|[^.]data$)${item_with_regex.resource_type}\\.(\\s*\\r?\\n\\s*)?(\\w+)(\\[\\s*[^]]+\\s*\\])?(\\.)(\\s*\\r?\\n\\s*)?${item_with_regex.regex}"
       replacement   = [for i, path in slice(item_with_regex.paths, 0, length(item_with_regex.paths) - 1) : "${path}$${${(i * 3 + 6)}}$${${(i * 3 + 7)}}$${${(i * 3 + 8)}}"]
     }
     ] : {
