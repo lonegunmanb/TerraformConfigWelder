@@ -56,9 +56,6 @@ locals {
     azurerm_sentinel_data_connector_microsoft_threat_intelligence = toset([
       "bing_safety_phishing_url_lookback_date",
     ])
-    azurerm_signalr_service = toset([
-      "live_trace_enabled",
-    ])
   }
   extra_attribute_removed_blocks = flatten([for _, blocks in flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if try(local.extra_attribute_removed[resource_type] != null, false)]) : [for b in blocks : b]])
   extra_attribute_removed_map    = { for block in local.extra_attribute_removed_blocks : block.mptf.block_address => block }

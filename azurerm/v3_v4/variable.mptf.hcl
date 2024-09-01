@@ -33,6 +33,11 @@ variable "azurerm_snapshot_toggle" {
   default = true
 }
 
+variable "azurerm_signalr_service_toggle" {
+  type    = bool
+  default = true
+}
+
 variable "azurerm_monitor_diagnostic_setting_toggle" {
   type    = bool
   default = true
