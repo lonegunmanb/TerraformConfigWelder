@@ -73,6 +73,28 @@ locals {
           replace_ref = true
         }
       ]
+      azurerm_windows_virtual_machine_scale_set = [
+        {
+          from        = "gallery_applications.package_reference_id"
+          to          = "version_id"
+          replace_ref = false
+        },
+        {
+          from        = "gallery_applications.configuration_reference_blob_uri"
+          to          = "configuration_blob_uri"
+          replace_ref = false
+        },
+        {
+          from        = "gallery_applications"
+          to          = "gallery_application"
+          replace_ref = true
+        },
+        {
+          from        = "terminate_notification"
+          to          = "termination_notification"
+          replace_ref = true
+        }
+      ]
       azurerm_data_protection_backup_policy_blob_storage = [
         {
           from        = "retention_duration"
@@ -276,5 +298,6 @@ transform regex_replace_expression simply_renamed {
   replacement = each.value.replacement
   depends_on = [
     transform.regex_replace_expression.azurerm_linux_virtual_machine_scale_set_gallery_application,
+    transform.regex_replace_expression.windows_virtual_machine_scale_set_gallery_application,
   ]
 }

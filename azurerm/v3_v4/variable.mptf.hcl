@@ -74,6 +74,11 @@ variable "azurerm_linux_virtual_machine_scale_set_toggle" {
   default = true
 }
 
+variable "azurerm_windows_virtual_machine_scale_set_toggle" {
+    type    = bool
+    default = true
+}
+
 variable "azurerm_kubernetes_cluster_toggle" {
   type    = bool
   default = true
