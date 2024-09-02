@@ -222,13 +222,6 @@ locals {
           replace_ref = false
         },
       ]
-      azurerm_windows_web_app = [
-        {
-          from        = "site_config.auto_heal_setting.trigger.slow_request"
-          to          = "slow_request_with_path"
-          replace_ref = false
-        }
-      ]
       azurerm_windows_web_app_slot = [
         {
           from        = "site_config.auto_heal_setting.trigger.slow_request"

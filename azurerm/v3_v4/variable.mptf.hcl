@@ -104,6 +104,11 @@ variable "azurerm_linux_web_app_toggle" {
   default = true
 }
 
+variable "azurerm_windows_web_app_toggle" {
+    type    = bool
+    default = true
+}
+
 variable "azurerm_managed_application_toggle" {
   type    = bool
   default = true

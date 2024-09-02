@@ -56,26 +56,6 @@ resource "azurerm_monitor_action_group" "example" {
   }
 }
 
-resource "azurerm_windows_web_app" "example" {
-  location            = azurerm_service_plan.example.location
-  name                = "example"
-  resource_group_name = azurerm_resource_group.example.name
-  service_plan_id     = azurerm_service_plan.example.id
-
-  site_config {
-    auto_heal_setting {
-      trigger {
-        slow_request {
-          count      = 0
-          interval   = ""
-          time_taken = ""
-          path       = var.azurerm_windows_web_app_site_config_auto_heal_setting_trigger_slow_request_path
-        }
-      }
-    }
-  }
-}
-
 resource "azurerm_windows_web_app_slot" "example" {
   app_service_id = azurerm_windows_web_app.example.id
   name           = "example-slot"
