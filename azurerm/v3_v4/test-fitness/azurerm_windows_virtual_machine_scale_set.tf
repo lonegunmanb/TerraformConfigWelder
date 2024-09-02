@@ -1,4 +1,6 @@
 resource "azurerm_windows_virtual_machine_scale_set" "example" {
+  count = 1
+
   admin_password       = "P@55w0rd1234!"
   admin_username       = "adminuser"
   instances            = 1
@@ -22,6 +24,16 @@ resource "azurerm_windows_virtual_machine_scale_set" "example" {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
+  dynamic "gallery_applications" {
+    for_each = var.azurerm_windows_virtual_machine_scale_set_gallery_applications == null ? [] : [var.gallery_applications]
+
+    content {
+      package_reference_id             = gallery_applications.value.package_reference_id
+      configuration_reference_blob_uri = gallery_applications.value.configuration_reference_blob_uri
+      order                            = gallery_applications.value.order
+      tag                              = gallery_applications.value.tag
+    }
+  }
   source_image_reference {
     offer     = "WindowsServer"
     publisher = "MicrosoftWindowsServer"
@@ -32,14 +44,13 @@ resource "azurerm_windows_virtual_machine_scale_set" "example" {
     enabled = var.azurerm_windows_virtual_machine_scale_set_terminate_notification_enabled
     timeout = var.azurerm_windows_virtual_machine_scale_set_terminate_notification_timeout
   }
-  ynamic "gallery_applications" {
-    for_each = var.azurerm_windows_virtual_machine_scale_set_gallery_applications == null ? [] : [var.gallery_applications]
+}
 
-    content {
-      configuration_reference_blob_uri = gallery_applications.value.configuration_reference_blob_uri
-      order                            = gallery_applications.value.order
-      package_reference_id             = gallery_applications.value.package_reference_id
-      tag                              = gallery_applications.value.tag
-    }
-  }
+
+locals {
+  azurerm_windows_virtual_machine_scale_set_gallery_applications_configuration_reference_blob_uri = azurerm_windows_virtual_machine_scale_set.example[0].gallery_applications[0].configuration_reference_blob_uri
+  azurerm_windows_virtual_machine_scale_set_gallery_applications_package_reference_id             = azurerm_windows_virtual_machine_scale_set.example[0].gallery_applications[0].package_reference_id
+  azurerm_windows_virtual_machine_scale_set_scale_in_policy                                       = azurerm_windows_virtual_machine_scale_set.example[0].scale_in_policy
+  azurerm_windows_virtual_machine_scale_set_terminate_notification_enabled                        = azurerm_windows_virtual_machine_scale_set.example[0].terminate_notification[0].enabled
+  azurerm_windows_virtual_machine_scale_set_terminate_notification_timeout                        = azurerm_windows_virtual_machine_scale_set.example[0].terminate_notification[0].timeout
 }
