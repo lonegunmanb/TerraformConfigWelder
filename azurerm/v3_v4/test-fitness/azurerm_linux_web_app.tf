@@ -25,3 +25,7 @@ resource "azurerm_linux_web_app" "example" {
     }
   }
 }
+
+locals {
+  azurerm_linux_web_app_site_config_auto_heal_setting_trigger_slow_request_path = azurerm_linux_web_app.example.site_config[0].auto_heal_setting[0].trigger[0].slow_request[0].path
+}
