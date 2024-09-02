@@ -581,4 +581,4 @@ You can use the following command to undo the transformation:
 mapotf reset --tf-dir <your_tf_dir>
 ```
 
-This project currently only supports the upgrade from `v3` to `v4` of the AzureRM Provider, but in fact, we can write transformation rules for any version upgrade of any Provider. I hope everyone will like this project.
+This project currently only supports the upgrade from `v3` to `v4` of the AzureRM Provider, but in fact, we can write transformation rules for any version upgrade of any Provider. I hope everyone will like this project. If you'd like to try migration from AzureRM `v3` to `v4`, please check it out [here](https://github.com/lonegunmanb/TerraformConfigWelder/blob/main/azurerm/v3_v4/readme.md).
