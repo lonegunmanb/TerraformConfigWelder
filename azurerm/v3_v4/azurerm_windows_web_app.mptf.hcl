@@ -5,7 +5,7 @@ transform regex_replace_expression azurerm_windows_web_app_slow_request_dot_path
 }
 
 transform "rename_block_element" azurerm_windows_web_app_slow_request_dot_path {
-  for_each = var.azurerm_windows_web_app_toggle ? ["azurerm_linux_web_app_slow_request_dot_path"] : []
+  for_each = var.azurerm_windows_web_app_toggle ? ["azurerm_windows_web_app_slow_request_dot_path"] : []
   rename {
     resource_type  = "azurerm_windows_web_app"
     attribute_path = ["site_config", "auto_heal_setting", "trigger", "slow_request"]
