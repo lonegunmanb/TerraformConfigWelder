@@ -137,6 +137,8 @@ The following breaking changes on managed resources are not processed in this ve
   - The `key_vault_id` property no longer accepts Managed HSM keys, instead please use the `managed_hsm_key_id` property.
 * [`azurerm_virtual_network`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_virtual_network)
   - The property `address_space` has been changed from a list to a set. If you're referencing an element in this property then this will require code changes.
+* [`azurerm_vpn_gateway_nat_rule`)(https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/4.0-upgrade-guide#azurerm_vpn_gateway_nat_rule)
+  - (Such expression is not supported: `flatten(azurerm_vpn_gateway_nat_rule.for_each[*].internal_address_space_mappings)`)
 * [`azurerm_web_application_firewall_policy`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_web_application_firewall_policy)
   - The deprecated property `managed_rules.managed_rule_set.rule_group_override.disabled_rules` has been removed in favour of the `managed_rules.managed_rule_set.rule_group_override.rule` block.
 
