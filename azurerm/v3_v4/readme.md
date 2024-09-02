@@ -133,6 +133,8 @@ The following breaking changes on managed resources are not processed in this ve
   - The deprecated property `condition` has been removed in favour of the `condition_json` property.
 * [`azurerm_subnet`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/4.0-upgrade-guide#azurerm_subnet)
   - The `actions` block has become a Set instead of a List, meaning that the order of these items no longer matters. If you're referencing these items within your Terraform Configuration, then this may require some code changes.
+* [`azurerm_storage_account_customer_managed_key`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/4.0-upgrade-guide#azurerm_storage_account_customer_managed_key)
+  - The `key_vault_id` property no longer accepts Managed HSM keys, instead please use the `managed_hsm_key_id` property.
 * [`azurerm_virtual_network`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_virtual_network)
   - The property `address_space` has been changed from a list to a set. If you're referencing an element in this property then this will require code changes.
 * [`azurerm_web_application_firewall_policy`](https://registry.terraform.io/providers/hashicorp/azurerm/3.116.0/docs/guides/4.0-upgrade-guide#azurerm_web_application_firewall_policy)
