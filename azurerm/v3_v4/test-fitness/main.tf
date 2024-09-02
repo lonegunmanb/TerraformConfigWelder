@@ -56,71 +56,7 @@ resource "azurerm_monitor_action_group" "example" {
   }
 }
 
-resource "azurerm_storage_share_directory" "singleton" {
-  name                 = "example"
-  share_name           = var.azurerm_storage_share_directory_share_name
-  storage_account_name = var.azurerm_storage_share_directory_storage_account_name
-}
 
-resource "azurerm_storage_share_directory" "count" {
-  count = var.azurerm_storage_share_directory_count
-
-  name                 = "example"
-  share_name           = var.azurerm_storage_share_directory_share_name
-  storage_account_name = var.azurerm_storage_share_directory_storage_account_name
-}
-
-resource "azurerm_storage_share_directory" "for_each" {
-  for_each = var.azurerm_storage_share_directory_for_each
-
-  name                 = "example"
-  share_name           = var.azurerm_storage_share_directory_share_name
-  storage_account_name = var.azurerm_storage_share_directory_storage_account_name
-}
-
-locals {
-  azurerm_storage_share_directory_count_storage_name  = azurerm_storage_share_directory.count[0].storage_account_name
-  azurerm_storage_share_directory_for_each_share_name = azurerm_storage_share_directory.for_each["a"].share_name
-}
-
-resource "azurerm_storage_table_entity" "singleton" {
-  entity = {
-    example = "example"
-  }
-  partition_key        = "examplepartition"
-  row_key              = "examplerow"
-  storage_account_name = var.azurerm_storage_table_entity_storage_account_name
-  table_name           = var.azurerm_storage_table_entity_storage_table_name
-}
-
-resource "azurerm_storage_table_entity" "count" {
-  count = var.azurerm_storage_table_entity_count
-
-  entity = {
-    example = "example"
-  }
-  partition_key        = "examplepartition"
-  row_key              = "examplerow"
-  storage_account_name = var.azurerm_storage_table_entity_storage_account_name
-  table_name           = var.azurerm_storage_table_entity_storage_table_name
-}
-
-resource "azurerm_storage_table_entity" "for_each" {
-  for_each = var.azurerm_storage_table_entity_for_each
-
-  entity = {
-    example = "example"
-  }
-  partition_key        = "examplepartition"
-  row_key              = "examplerow"
-  storage_account_name = var.azurerm_storage_table_entity_storage_account_name
-  table_name           = var.azurerm_storage_table_entity_storage_table_name
-}
-
-locals {
-  azurerm_storage_table_entity_count_storage_name  = azurerm_storage_table_entity.count[0].storage_account_name
-  azurerm_storage_table_entity_for_each_table_name = azurerm_storage_table_entity.for_each["a"].table_name
-}
 
 resource "azurerm_vpn_gateway_nat_rule" "external_mapping" {
   name                            = "example-vpngatewaynatrule"
