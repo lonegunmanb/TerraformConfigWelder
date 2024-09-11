@@ -178,3 +178,8 @@ variable "data_azurerm_storage_share_directory_toggle" {
   type    = bool
   default = true
 }
+
+variable "v4_compatible_creation_toggle" {
+  type = bool
+  default = false
+}

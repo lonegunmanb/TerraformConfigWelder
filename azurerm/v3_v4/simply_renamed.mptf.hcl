@@ -231,6 +231,9 @@ locals {
       }
     ]
   ])
+  renames_map = { for rename in [ for r in local.simply_renamed : r if !strcontains(r.from, ".")] : rename.resource_type => rename... }
+  resource_contains_renamed_attributes     = flatten([for _, blocks in flatten([for resource_type, resource_blocks in data.resource.all.result : resource_blocks if can(local.renames_map[resource_type]) ]) : [for b in blocks : b]])
+  resource_contains_renamed_attributes_map = { for b in local.resource_contains_renamed_attributes : b.mptf.block_address => b }
   rename_with_replacement = [for item_with_replacement in [for item_with_regex in [for item in [for rename in local.simply_renamed : {
     resource_type = rename.resource_type
     paths         = split(".", rename.from)
@@ -259,7 +262,6 @@ locals {
   }]
 }
 
-
 transform rename_block_element simply_renamed {
   for_each = var.simply_renamed_toggle ? ["simply_renamed"] : []
   dynamic "rename" {
@@ -277,6 +279,15 @@ transform rename_block_element simply_renamed {
     transform.update_in_place.oc_removed,
   ]
 }
+
+# transform new_block "simply_renamed_v3_override" {
+#   for_each = var.simply_renamed_toggle ? local.resource_contains_renamed_attributes_map : tomap({})
+#
+#   new_block_type = "resource"
+#   filename = "main_override.tf"
+#   labels = each.value.mptf.block_labels
+#   body = join("\n", [ for r in local.renames_map[each.value.mptf.block_labels[0]] : "${r.from} = ${each.value[r.from]}"])
+# }
 
 transform regex_replace_expression simply_renamed {
   for_each    = var.simply_renamed_toggle ? [for rename in local.rename_with_replacement : rename] : []
