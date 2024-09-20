@@ -75,8 +75,8 @@ variable "azurerm_linux_virtual_machine_scale_set_toggle" {
 }
 
 variable "azurerm_windows_virtual_machine_scale_set_toggle" {
-    type    = bool
-    default = true
+  type    = bool
+  default = true
 }
 
 variable "azurerm_kubernetes_cluster_toggle" {
@@ -110,8 +110,8 @@ variable "azurerm_linux_web_app_slot_toggle" {
 }
 
 variable "azurerm_windows_web_app_toggle" {
-    type    = bool
-    default = true
+  type    = bool
+  default = true
 }
 
 variable "azurerm_windows_web_app_slot_toggle" {
@@ -175,6 +175,11 @@ variable "data_azurerm_cosmosdb_account_toggle" {
 }
 
 variable "data_azurerm_storage_share_directory_toggle" {
+  type    = bool
+  default = true
+}
+
+variable "azurerm_cognitive_deployment_toggle" {
   type    = bool
   default = true
 }
