@@ -13,13 +13,13 @@ locals {
 }
 
 transform "remove_block_element" container_registry_with_encryption_and_enabled {
-  for_each             = var.azurerm_container_registry_toggle ? local.container_registry_with_encryption_and_enabled : {}
+  for_each             = var.azurerm_container_registry_toggle ? local.container_registry_with_encryption_and_enabled : tomap({})
   target_block_address = each.key
   paths                = ["encryption"]
 }
 
 transform "update_in_place" container_registry_with_encryption_and_enabled {
-  for_each             = var.azurerm_container_registry_toggle ? local.container_registry_with_encryption_and_enabled : {}
+  for_each             = var.azurerm_container_registry_toggle ? local.container_registry_with_encryption_and_enabled : tomap({})
   target_block_address = each.key
   asstring {
     dynamic "encryption" {
@@ -37,7 +37,7 @@ transform "update_in_place" container_registry_with_encryption_and_enabled {
 }
 
 transform "update_in_place" container_registry_with_regention_policy_dot_days_only {
-  for_each             = var.azurerm_container_registry_toggle ? local.container_registry_with_regention_policy_dot_days_only : {}
+  for_each             = var.azurerm_container_registry_toggle ? local.container_registry_with_regention_policy_dot_days_only : tomap({})
   target_block_address = each.key
   asstring {
     retention_policy_in_days = local.container_registry_resource_blocks_map[each.key].retention_policy[0].days
@@ -48,7 +48,7 @@ transform "update_in_place" container_registry_with_regention_policy_dot_days_on
 }
 
 transform "remove_block_element" container_registry_with_regention_policy_dot_days_only {
-  for_each             = var.azurerm_container_registry_toggle ? local.container_registry_with_regention_policy_dot_days_only : {}
+  for_each             = var.azurerm_container_registry_toggle ? local.container_registry_with_regention_policy_dot_days_only : tomap({})
   target_block_address = each.key
   paths                = ["retention_policy"]
   depends_on = [
@@ -66,7 +66,7 @@ transform regex_replace_expression container_registry_with_regention_policy_dot_
 }
 
 transform "update_in_place" container_registry_with_trust_policy_only {
-  for_each             = var.azurerm_container_registry_toggle ? local.container_registry_with_trust_policy_only : {}
+  for_each             = var.azurerm_container_registry_toggle ? local.container_registry_with_trust_policy_only : tomap({})
   target_block_address = each.key
   asstring {
     trust_policy_enabled = local.container_registry_resource_blocks_map[each.key].trust_policy[0].enabled
@@ -77,7 +77,7 @@ transform "update_in_place" container_registry_with_trust_policy_only {
 }
 
 transform "remove_block_element" container_registry_with_trust_policy_only {
-  for_each             = var.azurerm_container_registry_toggle ? local.container_registry_with_trust_policy_only : {}
+  for_each             = var.azurerm_container_registry_toggle ? local.container_registry_with_trust_policy_only : tomap({})
   target_block_address = each.key
   paths                = ["trust_policy"]
   depends_on = [
