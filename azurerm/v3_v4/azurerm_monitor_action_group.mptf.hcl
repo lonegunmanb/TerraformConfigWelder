@@ -12,7 +12,7 @@ transform "remove_block_element" monitor_action_group_event_hub_receiver_with_ev
   paths                = ["event_hub_receiver"]
 }
 
-transform "concat_block_body" monitor_action_group_event_hub_receiver_with_event_hub_id {
+transform "append_block_body" monitor_action_group_event_hub_receiver_with_event_hub_id {
   for_each             = var.azurerm_monitor_action_group_toggle ? local.monitor_action_group_with_event_hub_receiver : {}
   target_block_address = each.key
   block_body = join("\n", [
