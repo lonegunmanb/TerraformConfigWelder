@@ -4,5 +4,5 @@ data "azurerm_storage_account" "example" {
 }
 
 locals {
-  azurerm_storage_account_enable_https_traffic_only = data.azurerm_storage_account.example.https_traffic_only_enabled
+  data_azurerm_storage_account_enable_https_traffic_only = data.azurerm_storage_account.example.https_traffic_only_enabled
 }
