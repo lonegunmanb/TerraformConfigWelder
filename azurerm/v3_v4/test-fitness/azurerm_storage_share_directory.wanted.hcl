@@ -33,18 +33,18 @@ data "azurerm_storage_share" "azurerm_storage_share_directory_example_alternate_
   storage_account_name = var.azurerm_storage_share_directory_storage_account_name_alternate
 }
 
-data "azurerm_storage_share" "azurerm_storage_share_directory_example" {
-  provider = azurerm
-
-  name                 = var.azurerm_storage_share_directory_share_name
-  storage_account_name = var.azurerm_storage_share_directory_storage_account_name
-}
-
 data "azurerm_storage_share" "azurerm_storage_share_directory_example_alternate_provider_with_for_each" {
   provider = azurerm.alternate
   for_each = ["a", "b"]
 
   name                 = var.azurerm_storage_share_directory_share_name_alternate
   storage_account_name = var.azurerm_storage_share_directory_storage_account_name_alternate
+}
+
+data "azurerm_storage_share" "azurerm_storage_share_directory_example" {
+  provider = azurerm
+
+  name                 = var.azurerm_storage_share_directory_share_name
+  storage_account_name = var.azurerm_storage_share_directory_storage_account_name
 }
 

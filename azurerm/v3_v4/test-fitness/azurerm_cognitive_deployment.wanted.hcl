@@ -12,9 +12,9 @@ resource "azurerm_cognitive_deployment" "static" {
     iterator = scale
 
     content {
+      name     = var.azurerm_cognitive_deployment_scale_type
       capacity = var.azurerm_cognitive_deployment_scale_capacity
       family   = var.azurerm_cognitive_deployment_scale_family
-      name     = var.azurerm_cognitive_deployment_scale_type
       size     = var.azurerm_cognitive_deployment_scale_size
       tier     = var.azurerm_cognitive_deployment_scale_tier
     }
@@ -43,9 +43,9 @@ resource "azurerm_cognitive_deployment" "dynamic" {
     iterator = scale
 
     content {
+      name     = scale.value.type
       capacity = scale.value.capacity
       family   = scale.value.family
-      name     = scale.value.type
       size     = scale.value.size
       tier     = scale.value.tier
     }

@@ -1,22 +1,22 @@
 resource "azurerm_sentinel_log_analytics_workspace_onboarding" "singleton" {
   provider = alternative
 
-  customer_managed_key_enabled = false
   workspace_id                 = data.azurerm_log_analytics_workspace.azurerm_sentinel_log_analytics_workspace_onboarding_singleton.workspace_id
+  customer_managed_key_enabled = false
 }
 
 resource "azurerm_sentinel_log_analytics_workspace_onboarding" "count" {
   count = var.azurerm_sentinel_log_analytics_workspace_onboarding_count
 
-  customer_managed_key_enabled = false
   workspace_id                 = data.azurerm_log_analytics_workspace.azurerm_sentinel_log_analytics_workspace_onboarding_count[count.index].workspace_id
+  customer_managed_key_enabled = false
 }
 
 resource "azurerm_sentinel_log_analytics_workspace_onboarding" "for_each" {
   for_each = var.azurerm_sentinel_log_analytics_workspace_onboarding_for_each
 
-  customer_managed_key_enabled = false
   workspace_id                 = data.azurerm_log_analytics_workspace.azurerm_sentinel_log_analytics_workspace_onboarding_for_each[each.key].workspace_id
+  customer_managed_key_enabled = false
 }
 
 locals {

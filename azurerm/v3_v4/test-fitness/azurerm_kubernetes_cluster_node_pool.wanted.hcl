@@ -1,7 +1,6 @@
 resource "azurerm_kubernetes_cluster_node_pool" "example" {
   kubernetes_cluster_id   = azurerm_kubernetes_cluster.example.id
   name                    = "internal"
-  vm_size                 = "Standard_DS2_v2"
   auto_scaling_enabled    = var.azurerm_kubernetes_cluster_node_pool_enable_auto_scaling
   host_encryption_enabled = var.azurerm_kubernetes_cluster_node_pool_enable_host_encryption
   node_count              = 1
@@ -9,6 +8,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "example" {
   tags = {
     Environment = "Production"
   }
+  vm_size = "Standard_DS2_v2"
 }
 
 locals {

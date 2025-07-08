@@ -13,11 +13,11 @@ resource "azurerm_kubernetes_cluster" "example" {
 
   default_node_pool {
     name                    = "default"
-    vm_size                 = "Standard_D2_v2"
     auto_scaling_enabled    = var.azure_kubernetes_cluster_default_node_pool_enable_auto_scaling
     host_encryption_enabled = var.azure_kubernetes_cluster_default_node_pool_enable_host_encryption
     node_count              = 1
     node_public_ip_enabled  = var.azure_kubernetes_cluster_default_node_pool_enable_node_public_ip
+    vm_size                 = "Standard_D2_v2"
 
     linux_os_config {
       swap_file_size_mb = 100
